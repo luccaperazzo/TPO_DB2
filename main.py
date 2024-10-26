@@ -7,6 +7,7 @@ from funciones_gestion import *
 # --- Conexiones --- #
 # 
 #TEST ILAN CONTRA LUCCA
+#TEST SUBIDA FACU
 graph = Graph("bolt://neo4j:12345678@localhost:7687")
 client = MongoClient('mongodb://localhost:27017/')
 db = client['hotel_db']

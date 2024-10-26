@@ -1,6 +1,6 @@
 from py2neo import Graph, Node
 from funciones_gestion import *
-
+#cambio lucca
 # Conexion BD Neo4J
 graph = Graph("bolt://neo4j:12345678@localhost:7687")
 

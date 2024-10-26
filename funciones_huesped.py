@@ -54,7 +54,14 @@ def ver_detalles_huesped():
 
 def reservas_por_huesped(id_huesped):
     reservas = list(reservas_collection.find({"id_huesped": id_huesped}))
-    return reservas
+
+    if reservas:
+        for reserva in reservas:
+            print("-----------------------------------------------------")
+            print(f"Reserva ID: {reserva['_id']}\nFecha de entrada: {reserva['fecha_entrada']}\nFecha de salida: {reserva['fecha_salida']}\nID de habitación: {reserva['id_habitacion']}")
+            print("-----------------------------------------------------")
+    else:
+        print("No se encontraron reservas para este huésped.")
 
 def get_huespedes():
     try:

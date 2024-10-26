@@ -3,6 +3,7 @@ from pymongo import MongoClient
 from funciones_gestion import *
 from crear_entidades import *
 from funciones_gestion import *
+
 # --- Conexiones --- #
 # 
 #TEST ILAN CONTRA LUCCA
@@ -218,6 +219,8 @@ def gestionar_entidad():
         elif opcion == '6':
             crear_huespedes()
             crear_hoteles()
+            crear_pois()
+            
 
         elif opcion == '7':  # Salir
             print("Salir del sistema") 

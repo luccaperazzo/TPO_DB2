@@ -1,8 +1,25 @@
 from py2neo import Graph, Node
 from funciones_gestion import *
+from geopy.geocoders import Nominatim
 #cambio lucca
-# Conexion BD Neo4J
+# Conexion BD Neo4J y geocoders
 graph = Graph("bolt://neo4j:12345678@localhost:7687")
+geolocator = Nominatim(user_agent="geoapi")
+
+
+def obtener_coordenadas(direccion):
+    # Agrega "Capital Federal, Argentina" a la dirección
+    direccion_completa = f"{direccion}, Capital Federal, Argentina"
+    try:
+        location = geolocator.geocode(direccion_completa)
+        if location:
+            return (location.latitude, location.longitude)
+        else:
+            print("No se encontraron coordenadas para la dirección proporcionada.")
+            return None
+    except Exception as e:
+        print(f"Error al obtener coordenadas: {e}")
+        return None
 
 
 def alta_hotel(nombre, direccion, telefono, email, coordenadas):

@@ -5,7 +5,8 @@ from funciones_gestion import *
 from crear_entidades import *
 from funciones_gestion import *
 # --- Conexiones --- #
-#
+# 
+#TEST ILAN CONTRA LUCCA
 graph = Graph("bolt://neo4j:12345678@localhost:7687")
 client = MongoClient('mongodb://localhost:27017/')
 db = client['hotel_db']

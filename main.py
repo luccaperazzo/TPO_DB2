@@ -4,15 +4,14 @@ from funciones_gestion import *
 from crear_entidades import *
 from funciones_gestion import *
 
-<<<<<<< HEAD
+
 # --- Conexiones --- #
 # 
 #TEST ILAN CONTRA LUCCA
 #TEST SUBIDA FACU
 #TEST MILI
 
-=======
->>>>>>> ea78d4b0fba63b6a2182e9f6d2fffdae1c077825
+
 graph = Graph("bolt://neo4j:12345678@localhost:7687")
 client = MongoClient('mongodb://localhost:27017/')
 db = client['hotel_db']

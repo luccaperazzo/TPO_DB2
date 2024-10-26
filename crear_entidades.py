@@ -1,5 +1,6 @@
-from funciones_huesped import alta_huesped
-
+from funciones_gestion import *
+from funciones_huesped import *
+from funciones_hotel import *
 
 # Lista de datos de los huéspedes a crear
 def crear_huespedes():
@@ -21,3 +22,21 @@ def crear_huespedes():
             huesped["email"]
         )
 
+def crear_hoteles():
+    hoteles = [
+        {"nombre": "Hotel Obelisco", "direccion": "Av. 9 de Julio 123", "telefono": "123456789", "email": "obelisco@example.com", "coordenadas": "-34.603684, -58.381559"},
+        {"nombre": "Hotel Puerto Madero", "direccion": "Dique 1, Puerto Madero", "telefono": "987654321", "email": "puertomadero@example.com", "coordenadas": "-34.6083, -58.3629"},
+        {"nombre": "Hotel Recoleta", "direccion": "Av. Alvear 1891", "telefono": "111222333", "email": "recoleta@example.com", "coordenadas": "-34.5883, -58.3974"},
+        {"nombre": "Hotel Palermo", "direccion": "Calle Serrano 1425", "telefono": "444555666", "email": "palermo@example.com", "coordenadas": "-34.5888, -58.4304"},
+        {"nombre": "Hotel San Telmo", "direccion": "Calle Defensa 1047", "telefono": "777888999", "email": "santelmo@example.com", "coordenadas": "-34.6215, -58.3731"}
+    ]
+
+    for hotel in hoteles:
+        resultado = alta_hotel(
+            hotel["nombre"], 
+            hotel["direccion"], 
+            hotel["telefono"], 
+            hotel["email"], 
+            hotel["coordenadas"]
+        )
+        print(resultado)   

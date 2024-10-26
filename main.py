@@ -218,6 +218,7 @@ def gestionar_entidad():
         
         elif opcion == '6':
             crear_huespedes()
+            crear_hoteles()
 
         elif opcion == '7':  # Salir
             print("Salir del sistema") 

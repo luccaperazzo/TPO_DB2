@@ -83,7 +83,7 @@ def gestionar_entidad():
                 fecha_salida = input("Ingrese la fecha de salida (YYYY-MM-DD): ")
                 precio = input("Ingrese el precio de la reserva: ")
                 print(crear_reserva_si_disponible(id_habitacion, id_huesped, fecha_entrada, fecha_salida, precio))
-
+        
         elif opcion == '2':  # Modificar
             if entidad == '1':  # Hotel
                 id_hotel = input("Ingrese el ID del hotel a modificar: ")
@@ -91,10 +91,8 @@ def gestionar_entidad():
                 direccion = input("Ingrese la nueva dirección del hotel (o presione Enter para omitir): ")
                 telefono = input("Ingrese el nuevo teléfono del hotel (o presione Enter para omitir): ")
                 email = input("Ingrese el nuevo email del hotel (o presione Enter para omitir): ")
-                coordenadas = input("Ingrese las nuevas coordenadas del hotel (o presione Enter para omitir): ")
                 print(modificar_hotel(id_hotel, nombre if nombre else None, direccion if direccion else None,
-                                    telefono if telefono else None, email if email else None,
-                                    coordenadas if coordenadas else None))
+                                    telefono if telefono else None, email if email else None))
             
             elif entidad == '2':  # Habitación
                 id_habitacion = input("Ingrese el ID de la habitación a modificar: ")
@@ -116,6 +114,15 @@ def gestionar_entidad():
                 tipo = input("Ingrese el nuevo tipo del POI (o presione Enter para omitir): ")
                 print(modificar_poi(id_poi, nombre if nombre else None, detalle if detalle else None, 
                                     coordenadas if coordenadas else None, tipo if tipo else None))
+                
+            elif entidad == '5':  # Huésped
+                id_huesped = input("Ingrese el ID del huesped a modificar: ")
+                nombre = input("Ingrese el nombre del huésped: ")
+                apellido = input("Ingrese el apellido del huésped: ")
+                direccion = input("Ingrese la dirección del huésped: ")
+                telefono = input("Ingrese el teléfono del huésped: ")
+                email = input("Ingrese el email del huésped: ")
+                print(modificar_huesped(id_huesped, nombre, apellido, direccion, telefono, email))
 
         elif opcion == '3':  # Eliminar
             if entidad == '1':  # Hotel

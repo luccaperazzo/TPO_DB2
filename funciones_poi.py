@@ -65,8 +65,12 @@ def modificar_poi(id_poi, nombre=None, detalle=None, direccion=None, tipo=None):
             update_fields.append(f"poi.nombre = '{nombre}'")
         if detalle:
             update_fields.append(f"poi.detalle = '{detalle}'")
-        if coordenadas:
+        if direccion:
             update_fields.append(f"poi.direccion = '{direccion}'")
+            latitude,longitude = obtener_coordenadas(direccion)
+            update_fields.append(f"poi.latitude = '{latitude}'")
+            update_fields.append(f"poi.longitude = '{longitude}'")
+            
         if tipo:
             update_fields.append(f"poi.tipo = '{tipo}'")
         

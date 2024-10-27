@@ -42,7 +42,7 @@ def alta_hotel(nombre, direccion, telefono, email):
             CREATE (:Hotel {id_hotel: $id_hotel, nombre: $nombre, direccion: $direccion, 
             telefono: $telefono, email: $email, latitude: $latitude, longitude: $longitude})
         """
-        graph.run(query, id_hotel= id_hotel, nombre=nombre, direccion=direccion, 
+        graph.run(query, id_hotel=str(id_hotel), nombre=nombre, direccion=direccion, 
                   telefono=telefono, email=email, latitude=latitude, longitude=longitude)
         
         subquery="""
@@ -72,29 +72,31 @@ def baja_hotel(id_hotel):
     
     
     
-def modificar_hotel(id_hotel, nombre=None, direccion=None, telefono=None, email=None, coordenadas=None):
+def modificar_hotel(id_hotel, nombre=None, direccion=None, telefono=None, email=None):
+    
     try:
         # Actualizar solo los campos que no son None
         update_fields = []
+        
         if nombre:
             update_fields.append(f"h.nombre = '{nombre}'")
         if direccion:
             update_fields.append(f"h.direccion = '{direccion}'")
+            latitud, longitud = obtener_coordenadas(direccion)
+            update_fields.append(f"h.latitude = {latitud}")
+            update_fields.append(f"h.longitude = {longitud}")
+
         if telefono:
             update_fields.append(f"h.telefono = '{telefono}'")
         if email:
             update_fields.append(f"h.email = '{email}'")
-        if coordenadas:
-            update_fields.append(f"h.coordenadas = '{coordenadas}'")
-        
         if not update_fields:
             return "No se proporcionó ningún campo para modificar."
-        
         query = f"""
             MATCH (h:Hotel {{id_hotel: $id_hotel}})
             SET {', '.join(update_fields)}
         """
-        graph.run(query, id_hotel=id_hotel)
+        result = graph.run(query, id_hotel=id_hotel)
         return f"Hotel con ID {id_hotel} modificado exitosamente."
     except Exception as e:
         return f"Error al modificar el hotel: {e}"

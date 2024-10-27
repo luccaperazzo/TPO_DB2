@@ -22,6 +22,34 @@ def alta_huesped(nombre, apellido, direccion, telefono, email):
 
     except Exception as e:
         return f"Error al crear el huésped: {e}"
+    
+def modificar_huesped(id_huesped, nombre=None, apellido=None, direccion=None, telefono=None, email=None):
+    try:
+        # Actualizar solo los campos que no son None
+        update_fields = []
+        if nombre:
+            update_fields.append(f"h.nombre = '{nombre}'")
+        if apellido:
+            update_fields.append(f"h.apellido = '{apellido}'")
+        if direccion:
+            update_fields.append(f"h.direccion = '{direccion}'")
+        if telefono:
+            update_fields.append(f"h.telefono = '{telefono}'")
+        if email:
+            update_fields.append(f"h.email = '{email}'")
+        
+        if not update_fields:
+            return "No se proporcionó ningún campo para modificar."
+        
+        query = f"""
+            MATCH (h:Huesped {{id_huesped: $id_huesped}})
+            SET {', '.join(update_fields)}
+        """
+        graph.run(query, id_huesped=id_huesped)
+        return f"Huésped con ID {id_huesped} modificado exitosamente."
+    except Exception as e:
+        return f"Error al modificar el huésped: {e}"
+
 ## Consultas 
 def ver_detalles_huesped():
     try:

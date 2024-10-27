@@ -4,12 +4,14 @@ from funciones_gestion import *
 from crear_entidades import *
 from funciones_gestion import *
 
+
 # --- Conexiones --- #
 # 
 #TEST ILAN CONTRA LUCCA
 #TEST SUBIDA FACU
 #TEST MILI
-#TEST
+
+
 graph = Graph("bolt://neo4j:12345678@localhost:7687")
 client = MongoClient('mongodb://localhost:27017/')
 db = client['hotel_db']
@@ -184,20 +186,19 @@ def gestionar_entidad():
                 id_hotel = input("Ingrese el ID del hotel: ")
                 print(pois_cerca_de_hotel(id_hotel))
             elif consulta == '4':  # Habitaciones disponibles
-                id_hotel = input("Ingrese el ID del hotel: ")
-                fecha_entrada = input("Ingrese la fecha de entrada (YYYY-MM-DD): ")
-                fecha_salida = input("Ingrese la fecha de salida (YYYY-MM-DD): ")
-                # Llama a la función y filtra las habitaciones por hotel
-                habitaciones_disponibles_hotel = habitaciones_disponibles(fecha_entrada, fecha_salida, id_hotel)
-                
-                if habitaciones_disponibles_hotel:
-                    for hotel, habitacion in habitaciones_disponibles_hotel:
-                        print(f"Hotel: {hotel}, Habitación: {habitacion}")
-                else:
-                    print("No hay habitaciones disponibles para este hotel en las fechas especificadas.")
+                    id_hotel = input("Ingrese el ID del hotel: ")
+                    fecha_entrada = input("Ingrese la fecha de entrada (YYYY-MM-DD): ")
+                    fecha_salida = input("Ingrese la fecha de salida (YYYY-MM-DD): ")
+                    # Llama a la función y filtra las habitaciones por hotel
+                    habitaciones_disponibles_hotel = habitaciones_disponibles(fecha_entrada, fecha_salida, id_hotel)
+                    
+                    if habitaciones_disponibles_hotel:
+                        for hotel, habitacion in habitaciones_disponibles_hotel:
+                            print(f"Hotel: {hotel}, Habitación: {habitacion}")
+                    else:
+                        print("No hay habitaciones disponibles para este hotel en las fechas especificadas.")
 
 
-                print(habitaciones_disponibles(fecha_entrada, fecha_salida))
             elif consulta == '5':
                 id_habitacion = input("Ingrese el ID de la habitación: ")
                 print(amenities_habitacion(id_habitacion))

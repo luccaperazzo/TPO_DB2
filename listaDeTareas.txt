@@ -1,4 +1,4 @@
-hotel 
+hotel (Mili)
 	crear OK
 	modificar 
 		el ID no se modifica
@@ -8,7 +8,7 @@ hotel
 		listar hoteles y ingresar por nombre de hotel 
 		validar si existe
 
-habitacion 
+habitacion (Ilan)
 	crear: 	arreglar incremental por hotel.
 		en vez de ID de hotel mostrar opciones de hotel y elegir por nombre
 		verificar si existe el hotel sino dar mensaje de error si no existe el hotel y volver a pedir hotel
@@ -24,7 +24,7 @@ habitacion
 		verificar que queremos modificar, por ejemplo ID de hotel no se deberia cambiar
 	eliminar:	
 		listar, elegir por nombre y validar 
-amenity: 
+amenity: (Ilan)
 	crear: arreglar incremental por hotel.
 	modificar: 	
 		el ID no se modifica
@@ -32,19 +32,20 @@ amenity:
 		verificar condiciones de existir 
 		eliminar:	
 		listar, elegir por nombre y validar 
-POI
+POI (Mili)
 	crear: 	arreglar incremental por hotel.
 	modificar: 
 		el ID no se modifica
 		volver a calcular las relaciones con los POI
 		corregir el tema que no pida coordenadas y ver direccion
 		validar que exista y manejar los errores 
-huesped
+
+huesped (Mili)
 	crear: OK
 	ajustar el menu de opciones ya que no vamos a modificar o eliminar Y eliminar las funciones
 		
 	
-Reserva
+Reserva () Facu
 	crear: 	te tiene que pedir la fecha, dar una lista de hoteles, elegir
 		mostrar habitaciones disponiibles en base a la fecha,
 		mostrar huespedes lista de nombre apellido y ID tiene que ser el DNI. 
@@ -54,24 +55,18 @@ Reserva
 	eliminar
 		crear funcion con validaciones y mostrando por ID y toda la info relevante como fecha o huesped. 
 
-Crear relaciones: 
+Crear relaciones: (Facu)
 	sacar seleccionar entidades, que no lo muestre ni tenga funcion asociada
 	opcion 1 sacar
-	opcion 2 
-		relacion habiltacion amenities
-		listar hoteles y habitaciones + el id de habitacion
-		elegir por id 
-		mostrar ameneties disponibles
-		elegir lista ameneties
-		validaciones
+	opcion 2 sacar
 	opcion 3 sacar y sacar codigo.
 	
-
-Consulta 1: mostrar todos los POI disponibles - revisar el none de salida print
+(Lucca)
+Consulta 1: mostrar todos los POI disponibles - revisar el none de salida print 
 Consulta 2: mostrar todos los hoteles disponibles 
 Consulta 3: mostrar todos los hoteles disponibles - corregir el print 
-Consulta 4: mostrar todos los hoteles disponibles - revisar salida
-Consulta 5: mostrar todos las habitaciones disponibles
+Consulta 4: mostrar todos los hoteles disponibles - revisar salida 
+Consulta 5: mostrar todos las habitaciones disponibles 
 Consulta 6: revisar que muestre nombres de huesped y hotel
 Consulta 7: mostrar todos los huespedes / verificar codigo ya que rompe en reservas collection
 Consulta 8: mostrar todos los hoteles disponibles - revisar parametros de entrada

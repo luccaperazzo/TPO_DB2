@@ -3,14 +3,7 @@ from pymongo import MongoClient
 from funciones_gestion import *
 from crear_entidades import *
 from funciones_gestion import *
-
-
-# --- Conexiones --- #
-# 
-#TEST ILAN CONTRA LUCCA
-#TEST SUBIDA FACU
-#TEST MILI
-# test
+from funciones_amenity import *
 
 graph = Graph("bolt://neo4j:12345678@localhost:7687")
 client = MongoClient('mongodb://localhost:27017/')
@@ -56,9 +49,8 @@ def gestionar_entidad():
                 print(alta_habitacion(id_habitacion, tipo_habitacion, id_hotel))
             
             elif entidad == '3':  # Amenity
-                id_amenity = input("Ingrese el ID del amenity: ")
                 nombre = input("Ingrese el nombre del amenity: ")
-                print(alta_amenity(id_amenity, nombre))
+                print(alta_amenity(nombre))
             
             elif entidad == '4':  # POI
                 id_poi = input("Ingrese el ID del POI: ")
@@ -102,9 +94,7 @@ def gestionar_entidad():
                                             id_hotel if id_hotel else None))
             
             elif entidad == '3':  # Amenity
-                id_amenity = input("Ingrese el ID del amenity a modificar: ")
-                nombre = input("Ingrese el nuevo nombre del amenity (o presione Enter para omitir): ")
-                print(modificar_amenity(id_amenity, nombre if nombre else None))
+                print(modificar_amenity())
             
             elif entidad == '4':  # POI
                 id_poi = input("Ingrese el ID del POI a modificar: ")
@@ -134,8 +124,7 @@ def gestionar_entidad():
                 print(baja_habitacion(id_habitacion))
             
             elif entidad == '3':  # Amenity
-                id_amenity = input("Ingrese el ID del amenity a eliminar: ")
-                print(baja_amenity(id_amenity))
+                print(baja_amenity())
             
             elif entidad == '4':  # POI
                 id_poi = input("Ingrese el ID del POI a eliminar: ")
@@ -212,6 +201,7 @@ def gestionar_entidad():
             crear_huespedes()
             crear_hoteles()
             crear_pois()
+            crear_amenitys()
             
 
         elif opcion == '7':  # Salir

@@ -4,7 +4,6 @@ from bson.objectid import ObjectId
 from datetime import datetime
 from funciones_huesped import *
 
-
 # --- Conexiones ---
 graph = Graph("bolt://neo4j:12345678@localhost:7687")
 client = MongoClient('mongodb://localhost:27017/')
@@ -64,40 +63,6 @@ def modificar_habitacion(id_habitacion, tipo_habitacion=None, id_hotel=None):
     
     except Exception as e:
         return f"Error al modificar la habitación: {e}"
-
-    
-def alta_amenity(id_amenity, nombre):
-    try:
-        query = """
-            CREATE (:Amenity {id_amenity: $id_amenity, nombre: $nombre})
-        """
-        graph.run(query, id_amenity=id_amenity, nombre=nombre)
-        return f"Amenity '{nombre}' creado exitosamente."
-    except Exception as e:
-        return f"Error al crear el amenity: {e}"
-
-def baja_amenity(id_amenity):
-    try:
-        query = """
-            MATCH (a:Amenity {id_amenity: $id_amenity})
-            DETACH DELETE a
-        """
-        graph.run(query, id_amenity=id_amenity)
-        return f"Amenity con ID {id_amenity} eliminado exitosamente."
-    except Exception as e:
-        return f"Error al eliminar el amenity: {e}"
-    
-def modificar_amenity(id_amenity, nombre=None):
-    try:
-        if nombre:
-            query = """
-                MATCH (a:Amenity {id_amenity: $id_amenity})
-                SET a.nombre = $nombre
-            """
-            graph.run(query, id_amenity=id_amenity, nombre=nombre)
-        return f"Amenity con ID {id_amenity} modificado exitosamente."
-    except Exception as e:
-        return f"Error al modificar el amenity: {e}"
     
 def crear_relacion_hotel_habitacion(id_hotel, id_habitacion):
     query = f"MATCH (h:Hotel {{id_hotel: '{id_hotel}'}}), (hab:Habitacion {{id_habitacion: '{id_habitacion}'}}) CREATE (h)-[:TIENE]->(hab)"

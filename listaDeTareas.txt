@@ -24,13 +24,13 @@ habitacion (Ilan)
 		verificar que queremos modificar, por ejemplo ID de hotel no se deberia cambiar
 	eliminar:	
 		listar, elegir por nombre y validar 
-amenity: (Ilan)
+amenity: (Ilan) LISTO! 
 	crear: arreglar incremental por hotel.
 	modificar: 	
 		el ID no se modifica
 		dar opciones de amenity y elegir por nombre uno
 		verificar condiciones de existir 
-		eliminar:	
+	eliminar:	
 		listar, elegir por nombre y validar 
 POI (Mili)
 	crear: 	arreglar incremental por hotel.

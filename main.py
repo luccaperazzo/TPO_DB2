@@ -218,7 +218,8 @@ def gestionar_entidad():
             elif consulta == '8':
                 id_hotel = input("Ingrese el ID del hotel: ")
                 fecha = input("Ingrese la fecha (YYYY-MM-DD): ")
-                print(reservas_por_fecha_en_hotel(id_hotel, fecha))
+                fecha2 = input("Ingrese la fecha (YYYY-MM-DD): ")
+                print(reservas_por_fecha_en_hotel(id_hotel, fecha,fecha2))
             elif consulta == '9':
                 ver_detalles_huesped()
         

@@ -21,18 +21,27 @@ def obtener_coordenadas(direccion):
         print(f"Error al obtener coordenadas: {e}")
         return None
 
-def alta_poi(id_poi, nombre, detalle, direccion, tipo):
+def alta_poi(nombre, detalle, direccion, tipo):
     try:
+        # Encuentra el ID más alto de los POI actuales
+        query = "MATCH (p:POI) RETURN coalesce(max(toInteger(p.id_poi)), 0) AS max_id"
+        result = graph.run(query).data()
+        
+        # Obtener el ID más alto
+        max_id = result[0]["max_id"] if result else 0
+        nuevo_id = max_id + 1
+
+        id_poi= nuevo_id
 
         latitude, longitude = obtener_coordenadas(direccion)
         if latitude is None or longitude is None:
             return f"No se pudieron obtener las coordenadas para la dirección: {direccion}"
         
         query = """
-            CREATE (:POI {id_poi: $id_poi, nombre: $nombre, detalle: $detalle, 
+            CREATE (:POI {id_poi: $id_poi, nombre: $nombre, direccion: $direccion, detalle: $detalle, 
             latitude: $latitude, longitude: $longitude , tipo: $tipo})
         """
-        graph.run(query, id_poi=id_poi, nombre=nombre, detalle=detalle, latitude=latitude, longitude=longitude, tipo=tipo)
+        graph.run(query, id_poi=id_poi, nombre=nombre, direccion=direccion, detalle=detalle, latitude=latitude, longitude=longitude, tipo=tipo)
        
         subquery="""
         MATCH (p:POI{id_poi: $id_poi}), (h:Hotel)
@@ -40,7 +49,7 @@ def alta_poi(id_poi, nombre, detalle, direccion, tipo):
         CREATE (h) - [:CERCA_DE {distancia: point.distance(point({latitude: p.latitude, longitude: p.longitude}),
         point({latitude: h.latitude, longitude: h.longitude})) }] -> (p)"""
 
-        graph.run(subquery, id_poi=id_poi)
+        graph.run(subquery, id_poi=sid_poi)
 
         return f"POI '{nombre}' creado exitosamente."
     except Exception as e:
@@ -68,8 +77,8 @@ def modificar_poi(id_poi, nombre=None, detalle=None, direccion=None, tipo=None):
         if direccion:
             update_fields.append(f"poi.direccion = '{direccion}'")
             latitude,longitude = obtener_coordenadas(direccion)
-            update_fields.append(f"poi.latitude = '{latitude}'")
-            update_fields.append(f"poi.longitude = '{longitude}'")
+            update_fields.append(f"poi.latitude = {latitude}")
+            update_fields.append(f"poi.longitude = {longitude}")
             
         if tipo:
             update_fields.append(f"poi.tipo = '{tipo}'")
@@ -82,6 +91,46 @@ def modificar_poi(id_poi, nombre=None, detalle=None, direccion=None, tipo=None):
             SET {', '.join(update_fields)}
         """
         graph.run(query, id_poi=id_poi)
+
+        if direccion:
+            delete_query = """
+                MATCH (h:Hotel)-[r:CERCA_DE]->(p:POI {id_poi: $id_poi})
+                DELETE r
+            """
+            graph.run(delete_query, id_poi=id_poi)
+
+            create_query = """
+                MATCH (h:Hotel), (p:POI{id_poi: $id_poi})
+                WHERE point.distance(point({latitude: h.latitude, longitude: h.longitude}), point({latitude: p.latitude, longitude: p.longitude})) < 1000
+                CREATE (h)-[:CERCA_DE {distancia: point.distance(point({latitude: h.latitude, longitude: h.longitude}), point({latitude: p.latitude, longitude: p.longitude}))}]->(p)
+            """
+            graph.run(create_query, id_poi=id_poi)
+
         return f"POI con ID {id_poi} modificado exitosamente."
     except Exception as e:
         return f"Error al modificar el POI: {e}"
+    
+
+def listar_pois():
+    try:
+        query = "MATCH (p:POI) RETURN p.id_poi, p.nombre ORDER BY p.nombre"
+        result = graph.run(query)
+        pois = result.data()  # Devuelve una lista de diccionarios con los hoteles
+        if not pois:
+            print("No hay pois disponibles para modificar.")
+            return None
+        
+        print("Seleccione el punto de interes a modificar:")
+        for idx, poi in enumerate (pois, start=1):
+            print(f"{idx}. {poi['p.nombre']} ")
+        
+        seleccion = int(input("Ingrese el número del punto de interes que desea modificar: "))
+        if 1 <= seleccion <= len(pois):
+            return pois[seleccion - 1]['p.id_poi']  # Retorna el id del hotel seleccionado
+        else:
+            print("Selección inválida.")
+            return None
+    except Exception as e:
+        print(f"Error al listar los hoteles: {e}")
+        return None
+    

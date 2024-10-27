@@ -24,7 +24,7 @@ def obtener_coordenadas(direccion):
 
 def alta_hotel(nombre, direccion, telefono, email):
     try:
-        # Encuentra el ID más alto de los huéspedes actuales
+        # Encuentra el ID más alto de los hoteles actuales
         query = "MATCH (h:Hotel) RETURN coalesce(max(toInteger(h.id_hotel)), 0) AS max_id"
         result = graph.run(query).data()
         
@@ -51,7 +51,7 @@ def alta_hotel(nombre, direccion, telefono, email):
         CREATE (h) - [:CERCA_DE {distancia: point.distance(point({latitude: h.latitude, longitude: h.longitude}),
         point({latitude: p.latitude, longitude: p.longitude})) }] -> (p)"""
 
-        graph.run(subquery, id_hotel=id_hotel)
+        graph.run(subquery, id_hotel=str(id_hotel))
 
         return f"Hotel '{nombre}' creado exitosamente."
     except Exception as e:
@@ -97,6 +97,46 @@ def modificar_hotel(id_hotel, nombre=None, direccion=None, telefono=None, email=
             SET {', '.join(update_fields)}
         """
         result = graph.run(query, id_hotel=id_hotel)
+
+        if direccion:
+            delete_query = """
+                MATCH (h:Hotel {id_hotel: $id_hotel})-[r:CERCA_DE]->(p:POI)
+                DELETE r
+            """
+            graph.run(delete_query, id_hotel=id_hotel)
+
+            create_query = """
+                MATCH (h:Hotel {id_hotel: $id_hotel}), (p:POI)
+                WHERE point.distance(point({latitude: h.latitude, longitude: h.longitude}), point({latitude: p.latitude, longitude: p.longitude})) < 1000
+                CREATE (h)-[:CERCA_DE {distancia: point.distance(point({latitude: h.latitude, longitude: h.longitude}), point({latitude: p.latitude, longitude: p.longitude}))}]->(p)
+            """
+            graph.run(create_query, id_hotel=str(id_hotel))
+
         return f"Hotel con ID {id_hotel} modificado exitosamente."
     except Exception as e:
         return f"Error al modificar el hotel: {e}"
+    
+
+def listar_hoteles():
+    try:
+        query = "MATCH (h:Hotel) RETURN h.id_hotel, h.nombre ORDER BY h.nombre"
+        result = graph.run(query)
+        hoteles = result.data()  # Devuelve una lista de diccionarios con los hoteles
+        
+        if not hoteles:
+            print("No hay hoteles disponibles para modificar.")
+            return None
+        
+        print("Seleccione el hotel a modificar:")
+        for idx, hotel in enumerate(hoteles, start=1):
+            print(f"{idx}. {hotel['h.nombre']} ")
+        
+        seleccion = int(input("Ingrese el número del hotel que desea modificar: "))
+        if 1 <= seleccion <= len(hoteles):
+            return hoteles[seleccion - 1]['h.id_hotel']  # Retorna el id del hotel seleccionado
+        else:
+            print("Selección inválida.")
+            return None
+    except Exception as e:
+        print(f"Error al listar los hoteles: {e}")
+        return None

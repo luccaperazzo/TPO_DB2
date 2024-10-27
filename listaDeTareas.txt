@@ -61,22 +61,16 @@ Crear relaciones: (Facu)
 	opcion 2 sacar
 	opcion 3 sacar y sacar codigo.
 	
-<<<<<<< HEAD
 (Lucca)
-Consulta 1: mostrar todos los POI disponibles - revisar el none de salida print 
-=======
-
-#LUCCA 
-Consulta 1: mostrar todos los POI disponibles - revisar el none de salida print
->>>>>>> 71b13b66507bdc3e9f9f71550924d8a0b38de438
-Consulta 2: mostrar todos los hoteles disponibles 
-Consulta 3: mostrar todos los hoteles disponibles - corregir el print 
-Consulta 4: mostrar todos los hoteles disponibles - revisar salida 
-Consulta 5: mostrar todos las habitaciones disponibles 
-Consulta 6: revisar que muestre nombres de huesped y hotel
-Consulta 7: mostrar todos los huespedes / verificar codigo ya que rompe en reservas collection
-Consulta 8: mostrar todos los hoteles disponibles - revisar parametros de entrada
-Consulta 9: selecionar por id y te lo debe mostrar
+Consulta 1: mostrar todos los POI disponibles - revisar el none de salida print  X
+Consulta 2: mostrar todos los hoteles disponibles  X
+Consulta 3: mostrar todos los hoteles disponibles - corregir el print  X
+Consulta 4: mostrar todos los hoteles disponibles - revisar salida X
+Consulta 5: mostrar todos las habitaciones disponibles  X 
+Consulta 6: revisar que muestre nombres de huesped y hotel X
+Consulta 7: mostrar todos los huespedes / verificar codigo ya que rompe en reservas collection X
+Consulta 8: mostrar todos los hoteles disponibles - revisar parametros de entrada X
+Consulta 9: selecionar por id y te lo debe mostrar X
 
 	
 		

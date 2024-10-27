@@ -258,10 +258,6 @@ def reservas_por_numero_confirmacion(reserva_id):
 
 
 
-
-
-
-
 # 10. Traer las reservas por fecha de reserva en el hotel.
 def reservas_por_fecha_en_hotel(hotel_id, fecha_inicio, fecha_fin):
     try:

@@ -67,6 +67,7 @@ Crear relaciones:
 	opcion 3 sacar y sacar codigo.
 	
 
+#LUCCA 
 Consulta 1: mostrar todos los POI disponibles - revisar el none de salida print
 Consulta 2: mostrar todos los hoteles disponibles 
 Consulta 3: mostrar todos los hoteles disponibles - corregir el print 

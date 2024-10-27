@@ -123,64 +123,30 @@ def verificar_habitacion_en_hotel(id_habitacion):
 def hoteles_cerca_de_poi(poi_nombre):
     query = """
     MATCH (poi:POI {nombre: $poi_nombre})<-[:CERCA_DE]-(hotel:Hotel)
-    RETURN hotel.nombre AS nombre, hotel.direccion AS direccion
+    RETURN hotel.nombre, hotel.direccion
     """
     result = graph.run(query, parameters={"poi_nombre": poi_nombre})
-
-    # Imprimir la información en el formato deseado
-    for record in result:
-        hotel_nombre = record['nombre']
-        hotel_direccion = record['direccion']
-        print("-----------------------------------------------------")
-        print(f"Hotel: {hotel_nombre}\nDirección: {hotel_direccion}")
-        print("-----------------------------------------------------")
+    return result.data()
 
 
 # 4. Información de un hotel
 def informacion_hotel(hotel_nombre):
     query = """
     MATCH (hotel:Hotel {nombre: $hotel_nombre})
-    RETURN hotel.nombre AS nombre, hotel.direccion AS direccion, 
-           hotel.telefono AS telefono, hotel.email AS email, 
-           hotel.coordenadas AS coordenadas
+    RETURN hotel.nombre, hotel.direccion, hotel.telefono, hotel.email, hotel.coordenadas
     """
     result = graph.run(query, parameters={"hotel_nombre": hotel_nombre})
-
-    # Imprimir la información en el formato deseado
-    for record in result:
-        hotel_nombre = record['nombre']
-        hotel_direccion = record['direccion']
-        hotel_telefono = record['telefono']
-        hotel_email = record['email']
-        hotel_coordenadas = record['coordenadas']
-
-        print("-----------------------------------------------------")
-        print(f"Detalles del hotel:\nNombre: {hotel_nombre}\nDirección: {hotel_direccion}")
-        print(f"Teléfono: {hotel_telefono}\nEmail: {hotel_email}\nCoordenadas: {hotel_coordenadas}")
-        print("-----------------------------------------------------")
-
-
+    return result.data()
 
 
 # 5. POIs cerca de un hotel
 def pois_cerca_de_hotel(hotel_nombre):
     query = """
     MATCH (hotel:Hotel {nombre: $hotel_nombre})-[:CERCA_DE]->(poi:POI)
-    RETURN poi.nombre AS nombre, poi.detalle AS detalle, poi.tipo AS tipo
+    RETURN poi.nombre, poi.detalle, poi.tipo
     """
     result = graph.run(query, parameters={"hotel_nombre": hotel_nombre})
-
-    # Imprimir los resultados en formato legible
-    for record in result:
-        poi_nombre = record['nombre']
-        poi_detalle = record['detalle']
-        poi_tipo = record['tipo']
-
-        print("-----------------------------------------------------")
-        print(f"POI cercano:\nNombre: {poi_nombre}\nDetalle: {poi_detalle}\nTipo: {poi_tipo}")
-        print("-----------------------------------------------------")
-
-
+    return result.data()
 
 
 # 6. Habitaciones disponibles en un rango de fechas
@@ -214,14 +180,8 @@ def habitaciones_disponibles(fecha_inicio, fecha_fin, id_hotel):
     # Ejecutar la consulta
     result = graph.run(query, habitaciones_ocupadas=list(habitaciones_ocupadas), id_hotel=id_hotel)
 
-    # Imprimir los resultados en formato legible
-    for record in result:
-        hotel_nombre = record['hotel']
-        habitacion_id = record['habitacion']
-
-        print("-----------------------------------------------------")
-        print(f"Hotel: {hotel_nombre}\nHabitación disponible ID: {habitacion_id}")
-        print("-----------------------------------------------------")
+    # Retornar los resultados como una lista de tuplas
+    return [(record["hotel"], record["habitacion"]) for record in result.data()]
 
 
 
@@ -230,33 +190,16 @@ def habitaciones_disponibles(fecha_inicio, fecha_fin, id_hotel):
 def amenities_habitacion(id_habitacion):
     query = """
     MATCH (habitacion:Habitacion {id_habitacion: $id_habitacion})-[:TIENE_AMENITY]->(amenity:Amenity)
-    RETURN amenity.nombre AS nombre
+    RETURN amenity.nombre
     """
     result = graph.run(query, parameters={"id_habitacion": id_habitacion})
-
-    # Imprimir los resultados en formato legible
-    print(f"Amenities de la habitación ID {id_habitacion}:")
-    for record in result:
-        amenity_nombre = record['nombre']
-
-        print("-----------------------------------------------------")
-        print(f"Amenity: {amenity_nombre}")
-        print("-----------------------------------------------------")
-
+    return result.data()
 
 
 # 8. Reservas por número de confirmación (ID en MongoDB)
 def reservas_por_numero_confirmacion(reserva_id):
     reserva = reservas_collection.find_one({"_id": ObjectId(reserva_id)})
-
-    if reserva:
-        print("-----------------------------------------------------")
-        print(f"Reserva ID: {reserva['_id']}\nHuésped ID: {reserva['id_huesped']}\nFecha de entrada: {reserva['fecha_entrada']}\nFecha de salida: {reserva['fecha_salida']}\nID de habitación: {reserva['id_habitacion']}")
-        print("-----------------------------------------------------")
-    else:
-        print("No se encontró ninguna reserva con ese ID.")
-
-
+    return reserva if reserva else None
 
 
 
@@ -265,31 +208,25 @@ def reservas_por_numero_confirmacion(reserva_id):
 # 10. Traer las reservas por fecha de reserva en el hotel.
 def reservas_por_fecha_en_hotel(hotel_id, fecha_inicio, fecha_fin):
     try:
-        fecha_inicio_obj = datetime.strptime(fecha_inicio, "%Y-%m-%d")
-        fecha_fin_obj = datetime.strptime(fecha_fin, "%Y-%m-%d")
+       fecha_inicio_obj = datetime.strptime(fecha_inicio, "%Y-%m-%d")
+       fecha_fin_obj = datetime.strptime(fecha_fin, "%Y-%m-%d")
 
-        # Consultar reservas en MongoDB
-        reservas = list(reservas_collection.find({
-            "id_hotel": hotel_id,
-            "fecha_reserva": {
-                "$gte": fecha_inicio_obj,
-                "$lte": fecha_fin_obj
-            }
-        }))
+       query = """
+       MATCH (hotel:Hotel {id_hotel: $hotel_id})-[:TIENE]->(habitacion:Habitacion)
+       WITH habitacion
+       MATCH (reserva:Reserva)
+       WHERE reserva.id_habitacion = habitacion.id_habitacion AND reserva.fecha_reserva >= $fecha_inicio AND reserva.fecha_reserva <= $fecha_fin
 
-        if reservas:
-            for reserva in reservas:
-                print("-----------------------------------------------------")
-                print(f"Reserva ID: {reserva['_id']}")
-                print(f"Fecha de reserva: {reserva['fecha_reserva']}")
-                print(f"Huésped ID: {reserva['id_huesped']}")
-                print(f"ID de habitación: {reserva['id_habitacion']}")
-                print("-----------------------------------------------------")
-        else:
-            print("No se encontraron reservas para ese rango de fechas.")
-    
+       RETURN reserva
+       """
+
+
+       reservas = graph.run(query, hotel_id=hotel_id, fecha_inicio=fecha_inicio, fecha_fin = fecha_fin).data()
+       return reservas
+
+
     except Exception as e:
-        print(f"Error al obtener las reservas por fecha en el hotel: {e}")
+      return f"Error al obtener las reservas por fecha en el hotel: {e}"
 
 
    

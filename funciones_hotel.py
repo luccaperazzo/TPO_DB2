@@ -7,9 +7,22 @@ graph = Graph("bolt://neo4j:12345678@localhost:7687")
 geolocator = Nominatim(user_agent="geoapi")
 
 
+def obtener_coordenadas(direccion):
+    # Agrega "Capital Federal, Argentina" a la dirección
+    direccion_completa = f"{direccion}, Capital Federal, Argentina"
+    try:
+        location = geolocator.geocode(direccion_completa)
+        if location:
+            return (location.latitude, location.longitude)
+        else:
+            print("No se encontraron coordenadas para la dirección proporcionada.")
+            return None
+    except Exception as e:
+        print(f"Error al obtener coordenadas: {e}")
+        return None
 
 
-def alta_hotel(nombre, direccion, telefono, email, coordenadas):
+def alta_hotel(nombre, direccion, telefono, email):
     try:
         # Encuentra el ID más alto de los huéspedes actuales
         query = "MATCH (h:Hotel) RETURN coalesce(max(toInteger(h.id_hotel)), 0) AS max_id"
@@ -18,14 +31,28 @@ def alta_hotel(nombre, direccion, telefono, email, coordenadas):
         # Obtener el ID más alto
         max_id = result[0]["max_id"] if result else 0
         nuevo_id = max_id + 1
-        
+
+        id_hotel= nuevo_id
+
         # Crear el nuevo hotel
+        latitude, longitude = obtener_coordenadas(direccion)
+        if latitude is None or longitude is None:
+            return f"No se pudieron obtener las coordenadas para la dirección: {direccion}"
         query = """
             CREATE (:Hotel {id_hotel: $id_hotel, nombre: $nombre, direccion: $direccion, 
-            telefono: $telefono, email: $email, coordenadas: $coordenadas})
+            telefono: $telefono, email: $email, latitude: $latitude, longitude: $longitude})
         """
-        graph.run(query, id_hotel=nuevo_id, nombre=nombre, direccion=direccion, 
-                  telefono=telefono, email=email, coordenadas=coordenadas)
+        graph.run(query, id_hotel= id_hotel, nombre=nombre, direccion=direccion, 
+                  telefono=telefono, email=email, latitude=latitude, longitude=longitude)
+        
+        subquery="""
+        MATCH (h:Hotel{id_hotel: $id_hotel}), (p:POI)
+        WHERE point.distance(point({latitude: h.latitude, longitude: h.longitude}), point({latitude: p.latitude, longitude: p.longitude})) < 1000
+        CREATE (h) - [:CERCA_DE {distancia: point.distance(point({latitude: h.latitude, longitude: h.longitude}),
+        point({latitude: p.latitude, longitude: p.longitude})) }] -> (p)"""
+
+        graph.run(subquery, id_hotel=id_hotel)
+
         return f"Hotel '{nombre}' creado exitosamente."
     except Exception as e:
         return f"Error al crear el hotel: {e}"

@@ -43,13 +43,11 @@ def gestionar_entidad():
 
         if opcion == '1':  # Crear
             if entidad == '1':  # Hotel
-                id_hotel = input("Ingrese el ID del hotel: ")
                 nombre = input("Ingrese el nombre del hotel: ")
                 direccion = input("Ingrese la dirección del hotel: ")
                 telefono = input("Ingrese el teléfono del hotel: ")
                 email = input("Ingrese el email del hotel: ")
-                coordenadas = input("Ingrese las coordenadas del hotel: ")
-                print(alta_hotel(id_hotel, nombre, direccion, telefono, email, coordenadas))
+                print(alta_hotel(nombre, direccion, telefono, email))
             
             elif entidad == '2':  # Habitación
                 id_habitacion = input("Ingrese el ID de la habitación: ")
@@ -66,9 +64,9 @@ def gestionar_entidad():
                 id_poi = input("Ingrese el ID del POI: ")
                 nombre = input("Ingrese el nombre del POI: ")
                 detalle = input("Ingrese el detalle del POI: ")
-                coordenadas = input("Ingrese las coordenadas del POI: ")
+                direccion = input("Ingrese la direccion del POI: ")
                 tipo = input("Ingrese el tipo del POI: ")
-                print(alta_poi(id_poi, nombre, detalle, coordenadas, tipo))
+                print(alta_poi(id_poi, nombre, detalle, direccion, tipo))
                 
             elif entidad == '5':  # Huésped
                 nombre = input("Ingrese el nombre del huésped: ")

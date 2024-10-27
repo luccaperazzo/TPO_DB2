@@ -1,12 +1,12 @@
 hotel (Mili)
 	crear OK
 	modificar 
-		el ID no se modifica
-		volver a calcular las relaciones con los POI
-		mostrar nombres de hoteles y elegir por nombre	
+		el ID no se modifica --> listo ya saque
+		volver a calcular las relaciones con los POI --> ok
+		mostrar nombres de hoteles y elegir por nombre	--> Ok, lo elijo por numero.
 	eliminar: 
-		listar hoteles y ingresar por nombre de hotel 
-		validar si existe
+		listar hoteles y ingresar por nombre de hotel  --> listo
+		validar si existe --> listo 
 
 habitacion (Ilan)
 	crear: 	arreglar incremental por hotel.
@@ -33,12 +33,12 @@ amenity: (Ilan)
 		eliminar:	
 		listar, elegir por nombre y validar 
 POI (Mili)
-	crear: 	arreglar incremental por hotel.
+	crear: 	arreglar incremental por POI.  --> ok
 	modificar: 
-		el ID no se modifica
-		volver a calcular las relaciones con los POI
-		corregir el tema que no pida coordenadas y ver direccion
-		validar que exista y manejar los errores 
+		el ID no se modifica --> ok
+		volver a calcular las relaciones con los POI --> ok
+		corregir el tema que no pida coordenadas y ver direccion  --> ok
+		validar que exista y manejar los errores --> ok
 
 huesped (Mili)
 	crear: OK

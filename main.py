@@ -4,6 +4,7 @@ from funciones_gestion import *
 from crear_entidades import *
 from funciones_gestion import *
 from funciones_amenity import *
+from funciones_habitacion import *
 
 graph = Graph("bolt://neo4j:12345678@localhost:7687")
 client = MongoClient('mongodb://localhost:27017/')
@@ -17,14 +18,13 @@ def gestionar_entidad():
         print("1. Crear")
         print("2. Modificar")
         print("3. Eliminar")
-        print("4. Crear Relación")
         print("5. Consultas")
         print("6. Crear Datos Iniciales")
         print("7. Salir")
         opcion = input("Ingrese el número de la operación (1-7): ")
 
         # Para todas las opciones menos consultas, se selecciona la entidad
-        if opcion in ['1', '2', '3', '4']:
+        if opcion in ['1', '2', '3']:
             print("Seleccione la entidad:")
             print("1. Hotel")
             print("2. Habitación")
@@ -43,10 +43,7 @@ def gestionar_entidad():
                 print(alta_hotel(nombre, direccion, telefono, email))
             
             elif entidad == '2':  # Habitación
-                id_habitacion = input("Ingrese el ID de la habitación: ")
-                tipo_habitacion = input("Ingrese el tipo de habitación: ")
-                id_hotel = input("Ingrese el ID del hotel: ")
-                print(alta_habitacion(id_habitacion, tipo_habitacion, id_hotel))
+               print(alta_habitacion())
             
             elif entidad == '3':  # Amenity
                 nombre = input("Ingrese el nombre del amenity: ")
@@ -82,11 +79,7 @@ def gestionar_entidad():
                                     telefono if telefono else None, email if email else None))
             
             elif entidad == '2':  # Habitación
-                id_habitacion = input("Ingrese el ID de la habitación a modificar: ")
-                tipo_habitacion = input("Ingrese el nuevo tipo de habitación (o presione Enter para omitir): ")
-                id_hotel = input("Ingrese el nuevo ID de hotel (o presione Enter para omitir): ")
-                print(modificar_habitacion(id_habitacion, tipo_habitacion if tipo_habitacion else None, 
-                                            id_hotel if id_hotel else None))
+                print(modificar_habitacion())
             
             elif entidad == '3':  # Amenity
                 print(modificar_amenity())
@@ -115,8 +108,7 @@ def gestionar_entidad():
                 print(baja_hotel(id_hotel))
             
             elif entidad == '2':  # Habitación
-                id_habitacion = input("Ingrese el ID de la habitación a eliminar: ")
-                print(baja_habitacion(id_habitacion))
+                print(baja_habitacion())
             
             elif entidad == '3':  # Amenity
                 print(baja_amenity())
@@ -129,34 +121,7 @@ def gestionar_entidad():
                 resultado = baja_reserva()
                 print(resultado)
 
-        elif opcion == '4':  # Crear Relación
-            print("Seleccione la relación que desea crear:")
-            print("1. Hotel - TIENE -> Habitación")
-            print("2. Habitación - TIENE_AMENITY -> Amenity")
-            print("3. Hotel - CERCA_DE -> POI")
-            relacion = input("Ingrese el número de la relación (1-3): ")
-
-            if relacion == '1':  # Hotel - Habitación
-                id_hotel = input("Ingrese el ID del hotel: ")
-                id_habitacion = input("Ingrese el ID de la habitación: ")
-
-                # Verificar que la habitación no esté asignada a otro hotel
-                if verificar_habitacion_en_hotel(id_habitacion):
-                    print(f"La habitación {id_habitacion} ya está asignada a otro hotel.")
-                else:
-                    print(crear_relacion_hotel_habitacion(id_hotel, id_habitacion))
             
-            elif relacion == '2':  # Habitación - Amenity
-                id_habitacion = input("Ingrese el ID de la habitación: ")
-                id_amenity = input("Ingrese el ID del amenity: ")
-                print(crear_relacion_habitacion_amenity(id_habitacion, id_amenity))
-            
-            elif relacion == '3':  # Hotel - POI
-                id_hotel = input("Ingrese el ID del hotel: ")
-                id_poi = input("Ingrese el ID del POI: ")
-                distancia = input("Ingrese la distancia entre el hotel y el POI: ")
-                print(crear_relacion_hotel_poi(id_hotel, id_poi, distancia))
-        
         elif opcion == '5':  # Consultas
             print("Seleccione la consulta que desea realizar:")
             print("1. Hoteles cerca de un POI")
@@ -184,7 +149,7 @@ def gestionar_entidad():
                     habitaciones_disponibles_en_hotel(fecha_entrada, fecha_salida)
                     
             elif consulta == '5':
-                amenities_habitacion()
+                mostrar_amenities_habitacion()
             elif consulta == '6':
                 reservas_por_numero_confirmacion()
             elif consulta == '7':
@@ -201,7 +166,7 @@ def gestionar_entidad():
             crear_hoteles()
             crear_pois()
             crear_amenitys()
-            
+            crear_habitaciones()
 
         elif opcion == '7':  # Salir
             print("Salir del sistema") 

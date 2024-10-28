@@ -21,6 +21,31 @@ def obtener_coordenadas(direccion):
         print(f"Error al obtener coordenadas: {e}")
         return None
 
+def mostrar_hoteles():
+    try:
+        # Consulta para obtener ID y nombre de todos los hoteles
+        query = "MATCH (h:Hotel) RETURN h.id_hotel AS id, h.nombre AS nombre"
+        results = graph.run(query).data()
+
+        # Lista para almacenar diccionarios con id y nombre de cada hotel
+        lista_hoteles = []
+
+        # Verifica si hay resultados y muestra cada hotel
+        if results:
+            print("Lista de Hoteles:")
+            for hotel in results:
+                print(f"ID: {hotel['id']}, Nombre: {hotel['nombre']}")
+                # Agrega el id y nombre como diccionario a la lista
+                lista_hoteles.append({"id": hotel['id'], "nombre": hotel['nombre']})
+        else:
+            print("No se encontraron hoteles en la base de datos.")
+
+        # Retorna la lista de diccionarios
+        return lista_hoteles
+    except Exception as e:
+        print(f"Error al mostrar los hoteles: {e}")
+        return []
+
 
 def alta_hotel(nombre, direccion, telefono, email):
     try:

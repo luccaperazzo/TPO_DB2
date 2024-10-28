@@ -10,60 +10,6 @@ client = MongoClient('mongodb://localhost:27017/')
 db = client['hotel_db']
 reservas_collection = db['reservas']
 
-def alta_habitacion(id_habitacion, tipo_habitacion, id_hotel):
-    try:
-        query = """
-            MATCH (h:Hotel {id_hotel: $id_hotel})
-            CREATE (h)-[:TIENE]->(:Habitacion {id_habitacion: $id_habitacion, tipo_habitacion: $tipo_habitacion})
-        """
-        graph.run(query, id_habitacion=id_habitacion, tipo_habitacion=tipo_habitacion, id_hotel=id_hotel)
-        return f"Habitación '{id_habitacion}' creada exitosamente en el hotel {id_hotel}."
-    except Exception as e:
-        return f"Error al crear la habitación: {e}"
-    
-def baja_habitacion(id_habitacion):
-    try:
-        query = """
-            MATCH (hab:Habitacion {id_habitacion: $id_habitacion})
-            DETACH DELETE hab
-        """
-        graph.run(query, id_habitacion=id_habitacion)
-        return f"Habitación con ID {id_habitacion} eliminada exitosamente."
-    except Exception as e:
-        return f"Error al eliminar la habitación: {e}"
-    
-    
-def modificar_habitacion(id_habitacion, tipo_habitacion=None, id_hotel=None):
-    try:
-        # Actualizar solo los campos que no son None
-        update_fields = []
-        
-        if tipo_habitacion:
-            update_fields.append(f"hab.tipo_habitacion = '{tipo_habitacion}'")
-        
-        # Verificar si se debe cambiar el id_hotel
-        if id_hotel:
-            # Eliminar la relación existente con el hotel
-            query_unlink = "MATCH (h)-[r:TIENE]->(hab:Habitacion {id_habitacion: $id_habitacion}) DELETE r"
-            graph.run(query_unlink, id_habitacion=id_habitacion)
-
-            # Crear la nueva relación con el nuevo hotel
-            query_link = "MATCH (h:Hotel {id_hotel: $id_hotel}), (hab:Habitacion {id_habitacion: $id_habitacion}) CREATE (h)-[:TIENE]->(hab)"
-            graph.run(query_link, id_hotel=id_hotel, id_habitacion=id_habitacion)
-
-        # Si hay campos para actualizar, construir y ejecutar la consulta de actualización
-        if update_fields:
-            query = f"""
-                MATCH (hab:Habitacion {{id_habitacion: $id_habitacion}})
-                SET {', '.join(update_fields)}
-            """
-            graph.run(query, id_habitacion=id_habitacion)
-        
-        return f"Habitación con ID {id_habitacion} modificada exitosamente."
-    
-    except Exception as e:
-        return f"Error al modificar la habitación: {e}"
-    
 def crear_relacion_hotel_habitacion(id_hotel, id_habitacion):
     query = f"MATCH (h:Hotel {{id_hotel: '{id_hotel}'}}), (hab:Habitacion {{id_habitacion: '{id_habitacion}'}}) CREATE (h)-[:TIENE]->(hab)"
     graph.run(query)
@@ -265,49 +211,6 @@ def habitaciones_disponibles_en_hotel(id_hotel, fecha_inicio, fecha_fin):
 
     # Devolver las habitaciones disponibles
     return [record['habitacion'] for record in result_habitaciones]
-
-
-
-def amenities_habitacion():
-    # Consulta para obtener todas las habitaciones disponibles
-    query_habitaciones = """
-    MATCH (hotel:Hotel)-[:TIENE]->(habitacion:Habitacion)
-    RETURN hotel.nombre AS hotel_nombre, habitacion.id_habitacion AS id_habitacion, habitacion.tipo_habitacion AS tipo_habitacion
-    """
-    habitaciones_result = graph.run(query_habitaciones)
-
-    # Listar las habitaciones disponibles
-    print("Lista de habitaciones disponibles:")
-    habitaciones_disponibles = []
-    for record in habitaciones_result:
-        hotel_nombre = record['hotel_nombre']
-        id_habitacion = record['id_habitacion']
-        tipo_habitacion = record['tipo_habitacion']
-        habitaciones_disponibles.append(id_habitacion)
-        print(f"Hotel: {hotel_nombre}, Habitación ID: {id_habitacion}, Tipo: {tipo_habitacion}")
-
-    # Solicitar al usuario que elija una habitación
-    id_habitacion = input("Ingrese el ID de una habitación para ver sus amenities: ")
-
-    if id_habitacion not in habitaciones_disponibles:
-        print("El ID de habitación ingresado no está en la lista de habitaciones disponibles.")
-        return
-
-    # Consulta para obtener los amenities de la habitación seleccionada
-    query = """
-    MATCH (habitacion:Habitacion {id_habitacion: $id_habitacion})-[:TIENE_AMENITY]->(amenity:Amenity)
-    RETURN amenity.nombre AS nombre
-    """
-    result = graph.run(query, parameters={"id_habitacion": id_habitacion})
-
-    # Mostrar los amenities de la habitación seleccionada
-    print(f"\nAmenities de la habitación ID {id_habitacion}:")
-    for record in result:
-        amenity_nombre = record['nombre']
-        print("-----------------------------------------------------")
-        print(f"Amenity: {amenity_nombre}")
-        print("-----------------------------------------------------")
-
 
 
 # 8. Reservas por número de confirmación (ID en MongoDB)

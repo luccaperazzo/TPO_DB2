@@ -8,12 +8,15 @@ hotel (Mili)
 		listar hoteles y ingresar por nombre de hotel 
 		validar si existe
 
-habitacion (Ilan)
+habitacion (Ilan) LISTO! 
 	crear: 	arreglar incremental por hotel.
 		en vez de ID de hotel mostrar opciones de hotel y elegir por nombre
-		verificar si existe el hotel sino dar mensaje de error si no existe el hotel y volver a pedir hotel
+		verificar si existe el hotel sino dar mensaje de error si no existe 
+		el hotel y volver a pedir hotel
 		se debe asociar al hotel en el momento de creacion
-		listar los amenities disponibles y ingresar ningun, uno o mas opciones para asignar como lista en atributo de amenities de la habitacion. Crear todas las relaciones correspondientes.
+		listar los amenities disponibles y ingresar ningun, uno o mas opciones 
+		para asignar como lista en atributo de amenities de la habitacion. 
+		Crear todas las relaciones correspondientes.
 
 	modificar: 
 		el ID no se modifica

@@ -6,6 +6,11 @@ from funciones_gestion import *
 
 
 # --- Conexiones --- #
+# 
+#TEST ILAN CONTRA LUCCA
+#TEST SUBIDA FACU
+#TEST MILI
+
 
 graph = Graph("bolt://neo4j:12345678@localhost:7687")
 client = MongoClient('mongodb://localhost:27017/')
@@ -51,9 +56,8 @@ def gestionar_entidad():
                 print(alta_habitacion(id_habitacion, tipo_habitacion, id_hotel))
             
             elif entidad == '3':  # Amenity
-                id_amenity = input("Ingrese el ID del amenity: ")
                 nombre = input("Ingrese el nombre del amenity: ")
-                print(alta_amenity(id_amenity, nombre))
+                print(alta_amenity(nombre))
             
             elif entidad == '4':  # POI
                 nombre = input("Ingrese el nombre del POI: ")
@@ -108,9 +112,7 @@ def gestionar_entidad():
                                             id_hotel if id_hotel else None))
             
             elif entidad == '3':  # Amenity
-                id_amenity = input("Ingrese el ID del amenity a modificar: ")
-                nombre = input("Ingrese el nuevo nombre del amenity (o presione Enter para omitir): ")
-                print(modificar_amenity(id_amenity, nombre if nombre else None))
+                print(modificar_amenity())
             
             elif entidad == '4':  # POI
                 intentos = 0
@@ -162,8 +164,7 @@ def gestionar_entidad():
                 print(baja_habitacion(id_habitacion))
             
             elif entidad == '3':  # Amenity
-                id_amenity = input("Ingrese el ID del amenity a eliminar: ")
-                print(baja_amenity(id_amenity))
+                print(baja_amenity())
             
             elif entidad == '4':  # POI
                 id_poi = input("Ingrese el ID del POI a eliminar: ")
@@ -212,41 +213,27 @@ def gestionar_entidad():
 
             # Lógica para cada consulta
             if consulta == '1':
-                poi_nombre = input("Ingrese el nombre del POI: ")
-                print(hoteles_cerca_de_poi(poi_nombre))
+                hoteles_cerca_de_poi()
             elif consulta == '2':
-                hotel_nombre = input("Ingrese el nombre del hotel: ")
-                print(informacion_hotel(hotel_nombre))
+                informacion_hotel()
             elif consulta == '3':
-                id_hotel = input("Ingrese el ID del hotel: ")
-                print(pois_cerca_de_hotel(id_hotel))
+                pois_cerca_de_hotel()
             elif consulta == '4':  # Habitaciones disponibles
-                    id_hotel = input("Ingrese el ID del hotel: ")
                     fecha_entrada = input("Ingrese la fecha de entrada (YYYY-MM-DD): ")
                     fecha_salida = input("Ingrese la fecha de salida (YYYY-MM-DD): ")
                     # Llama a la función y filtra las habitaciones por hotel
-                    habitaciones_disponibles_hotel = habitaciones_disponibles(fecha_entrada, fecha_salida, id_hotel)
+                    habitaciones_disponibles_en_hotel(fecha_entrada, fecha_salida)
                     
-                    if habitaciones_disponibles_hotel:
-                        for hotel, habitacion in habitaciones_disponibles_hotel:
-                            print(f"Hotel: {hotel}, Habitación: {habitacion}")
-                    else:
-                        print("No hay habitaciones disponibles para este hotel en las fechas especificadas.")
-
-
             elif consulta == '5':
-                id_habitacion = input("Ingrese el ID de la habitación: ")
-                print(amenities_habitacion(id_habitacion))
+                amenities_habitacion()
             elif consulta == '6':
-                numero_confirmacion = input("Ingrese el número de confirmación: ")
-                print(reservas_por_numero_confirmacion(numero_confirmacion))
+                reservas_por_numero_confirmacion()
             elif consulta == '7':
-                id_huesped = input("Ingrese el ID del huésped: ")
-                print(reservas_por_huesped(id_huesped))
+                reservas_por_huesped()
             elif consulta == '8':
-                id_hotel = input("Ingrese el ID del hotel: ")
                 fecha = input("Ingrese la fecha (YYYY-MM-DD): ")
-                print(reservas_por_fecha_en_hotel(id_hotel, fecha))
+                fecha2 = input("Ingrese la fecha (YYYY-MM-DD): ")
+                reservas_por_fecha_en_hotel(fecha,fecha2)
             elif consulta == '9':
                 ver_detalles_huesped()
         
@@ -254,6 +241,7 @@ def gestionar_entidad():
             crear_huespedes()
             crear_hoteles()
             crear_pois()
+            crear_amenitys()
             
 
         elif opcion == '7':  # Salir

@@ -49,7 +49,7 @@ def alta_poi(nombre, detalle, direccion, tipo):
         CREATE (h) - [:CERCA_DE {distancia: point.distance(point({latitude: p.latitude, longitude: p.longitude}),
         point({latitude: h.latitude, longitude: h.longitude})) }] -> (p)"""
 
-        graph.run(subquery, id_poi=sid_poi)
+        graph.run(subquery, id_poi=id_poi)
 
         return f"POI '{nombre}' creado exitosamente."
     except Exception as e:

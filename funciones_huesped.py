@@ -1,9 +1,14 @@
 from py2neo import Graph, Node
 from funciones_gestion import *
-
+from pymongo import MongoClient
+from bson.objectid import ObjectId
+from datetime import datetime
 
 # Conexion BD Neo4J
 graph = Graph("bolt://neo4j:12345678@localhost:7687")
+client = MongoClient('mongodb://localhost:27017/')
+db = client['hotel_db']
+reservas_collection = db['reservas']
 
 # Funciones Huesped
 def alta_huesped(nombre, apellido, direccion, telefono, email):
@@ -53,19 +58,19 @@ def modificar_huesped(id_huesped, nombre=None, apellido=None, direccion=None, te
 ## Consultas 
 def ver_detalles_huesped():
     try:
-        # Mostrar los huéspedes disponibles
+        # Mostrar la lista de huéspedes disponibles
         print("Lista de huéspedes disponibles:")
         get_huespedes()
 
-        # Solicitar el apellido del huésped
-        apellido = input("Introduce el apellido del huésped que deseas ver: ")
+        # Solicitar el ID del huésped
+        id_huesped = input("Introduce el ID del huésped que deseas ver: ")
 
-        # Consulta para buscar el huésped por apellido
+        # Consulta para buscar el huésped por ID
         query = """
-        MATCH (huesped:Huesped {apellido: $apellido})
+        MATCH (huesped:Huesped {id_huesped: $id_huesped})
         RETURN huesped
         """
-        result = graph.run(query, parameters={"apellido": apellido}).data()
+        result = graph.run(query, parameters={"id_huesped": id_huesped}).data()
 
         # Mostrar los detalles del huésped si se encuentra
         if result:
@@ -75,12 +80,21 @@ def ver_detalles_huesped():
                 print(f"Detalles del huésped:\nID: {huesped['id_huesped']}\nNombre: {huesped['nombre']}\nApellido: {huesped['apellido']}\nDirección: {huesped['direccion']}\nTeléfono: {huesped['telefono']}\nEmail: {huesped['email']}")
                 print("-----------------------------------------------------")
         else:
-            print(f"No se encontraron huéspedes con el apellido '{apellido}'.")
+            print(f"No se encontraron huéspedes con el ID '{id_huesped}'.")
 
     except Exception as e:
         print(f"Error al obtener los detalles del huésped: {e}")
 
-def reservas_por_huesped(id_huesped):
+
+def reservas_por_huesped():
+    # Listar todos los huéspedes
+    print("Lista de huéspedes disponibles:")
+    get_huespedes()  # Asegúrate de que esta función imprima los huéspedes y sus IDs
+
+    # Solicitar al usuario que ingrese el ID del huésped
+    id_huesped = input("Introduce el ID del huésped para ver sus reservas: ")
+
+    # Consultar reservas para el huésped específico
     reservas = list(reservas_collection.find({"id_huesped": id_huesped}))
 
     if reservas:
@@ -91,12 +105,13 @@ def reservas_por_huesped(id_huesped):
     else:
         print("No se encontraron reservas para este huésped.")
 
+
 def get_huespedes():
     try:
         # Consulta para obtener los nombres y apellidos de todos los huéspedes
         query = """
         MATCH (h:Huesped)
-        RETURN h.nombre AS nombre, h.apellido AS apellido
+        RETURN h.nombre AS nombre, h.apellido AS apellido,h.id_huesped as id_huesped
         """
         result = graph.run(query).data()
 
@@ -105,7 +120,8 @@ def get_huespedes():
             for record in result:
                 nombre = record['nombre']
                 apellido = record['apellido']
-                print(f"Nombre: {nombre}, Apellido: {apellido}")
+                id_huesped = record['id_huesped']
+                print(f"Nombre: {nombre}, Apellido: {apellido}, ID : {id_huesped}")
         else:
             print("No se encontraron huéspedes en la base de datos.")
 

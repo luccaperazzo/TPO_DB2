@@ -2,6 +2,7 @@ from funciones_gestion import *
 from funciones_huesped import *
 from funciones_hotel import *
 from funciones_poi import *
+from funciones_amenity import *
 
 
 
@@ -24,6 +25,7 @@ def crear_huespedes():
             huesped["telefono"], 
             huesped["email"]
         )
+        print(resultado)
 def crear_pois():
     pois = [
         {"nombre": "Obelisco", "detalle": "Monumento icónico en Buenos Aires", "direccion": "Av. 9 de Julio", "tipo": "Monumento"},
@@ -70,4 +72,20 @@ def crear_hoteles():
         )
         print(resultado)   
 
+def crear_amenitys():
+    amenitys = [
+        "Sales de Baño",
+        "Chocolates",
+        "Copa de Bienvenida",
+        "Mini Bar",
+        "Toallas Extra",
+        "Bata de Baño",
+        "Desayuno en Habitación",
+        "Almohadas Adicionales",
+        "Wi-Fi Gratuito",
+        "Café y Té"
+    ]
 
+    for nombre in amenitys:
+        resultado = alta_amenity(nombre)
+        print(resultado)

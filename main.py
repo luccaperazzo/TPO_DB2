@@ -69,12 +69,7 @@ def gestionar_entidad():
                 print(alta_huesped(nombre, apellido, direccion, telefono, email))
             
             elif entidad == '6':  # Reserva
-                id_habitacion = input("Ingrese el ID de la habitación: ")
-                id_huesped = input("Ingrese el ID del huésped: ")
-                fecha_entrada = input("Ingrese la fecha de entrada (YYYY-MM-DD): ")
-                fecha_salida = input("Ingrese la fecha de salida (YYYY-MM-DD): ")
-                precio = input("Ingrese el precio de la reserva: ")
-                print(crear_reserva_si_disponible(id_habitacion, id_huesped, fecha_entrada, fecha_salida, precio))
+                crear_reserva()
         
         elif opcion == '2':  # Modificar
             if entidad == '1':  # Hotel
@@ -129,6 +124,10 @@ def gestionar_entidad():
             elif entidad == '4':  # POI
                 id_poi = input("Ingrese el ID del POI a eliminar: ")
                 print(baja_poi(id_poi))
+
+            elif entidad == '6': #Reserva
+                resultado = baja_reserva()
+                print(resultado)
 
         elif opcion == '4':  # Crear Relación
             print("Seleccione la relación que desea crear:")

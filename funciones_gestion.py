@@ -10,60 +10,6 @@ client = MongoClient('mongodb://localhost:27017/')
 db = client['hotel_db']
 reservas_collection = db['reservas']
 
-def alta_habitacion(id_habitacion, tipo_habitacion, id_hotel):
-    try:
-        query = """
-            MATCH (h:Hotel {id_hotel: $id_hotel})
-            CREATE (h)-[:TIENE]->(:Habitacion {id_habitacion: $id_habitacion, tipo_habitacion: $tipo_habitacion})
-        """
-        graph.run(query, id_habitacion=id_habitacion, tipo_habitacion=tipo_habitacion, id_hotel=id_hotel)
-        return f"Habitación '{id_habitacion}' creada exitosamente en el hotel {id_hotel}."
-    except Exception as e:
-        return f"Error al crear la habitación: {e}"
-    
-def baja_habitacion(id_habitacion):
-    try:
-        query = """
-            MATCH (hab:Habitacion {id_habitacion: $id_habitacion})
-            DETACH DELETE hab
-        """
-        graph.run(query, id_habitacion=id_habitacion)
-        return f"Habitación con ID {id_habitacion} eliminada exitosamente."
-    except Exception as e:
-        return f"Error al eliminar la habitación: {e}"
-    
-    
-def modificar_habitacion(id_habitacion, tipo_habitacion=None, id_hotel=None):
-    try:
-        # Actualizar solo los campos que no son None
-        update_fields = []
-        
-        if tipo_habitacion:
-            update_fields.append(f"hab.tipo_habitacion = '{tipo_habitacion}'")
-        
-        # Verificar si se debe cambiar el id_hotel
-        if id_hotel:
-            # Eliminar la relación existente con el hotel
-            query_unlink = "MATCH (h)-[r:TIENE]->(hab:Habitacion {id_habitacion: $id_habitacion}) DELETE r"
-            graph.run(query_unlink, id_habitacion=id_habitacion)
-
-            # Crear la nueva relación con el nuevo hotel
-            query_link = "MATCH (h:Hotel {id_hotel: $id_hotel}), (hab:Habitacion {id_habitacion: $id_habitacion}) CREATE (h)-[:TIENE]->(hab)"
-            graph.run(query_link, id_hotel=id_hotel, id_habitacion=id_habitacion)
-
-        # Si hay campos para actualizar, construir y ejecutar la consulta de actualización
-        if update_fields:
-            query = f"""
-                MATCH (hab:Habitacion {{id_habitacion: $id_habitacion}})
-                SET {', '.join(update_fields)}
-            """
-            graph.run(query, id_habitacion=id_habitacion)
-        
-        return f"Habitación con ID {id_habitacion} modificada exitosamente."
-    
-    except Exception as e:
-        return f"Error al modificar la habitación: {e}"
-    
 def crear_relacion_hotel_habitacion(id_hotel, id_habitacion):
     query = f"MATCH (h:Hotel {{id_hotel: '{id_hotel}'}}), (hab:Habitacion {{id_habitacion: '{id_habitacion}'}}) CREATE (h)-[:TIENE]->(hab)"
     graph.run(query)
@@ -228,26 +174,11 @@ def pois_cerca_de_hotel():
 
 
 # 6. Habitaciones disponibles en un rango de fechas
-def habitaciones_disponibles_en_hotel(fecha_inicio, fecha_fin):
+# Función para obtener habitaciones disponibles en un hotel para un rango de fechas
+def habitaciones_disponibles_en_hotel(id_hotel, fecha_inicio, fecha_fin):
     # Convertir fechas a objetos datetime
     fecha_inicio = datetime.strptime(fecha_inicio, "%Y-%m-%d")
     fecha_fin = datetime.strptime(fecha_fin, "%Y-%m-%d")
-
-    # Listar todos los hoteles
-    query_hoteles = """
-    MATCH (h:Hotel)
-    RETURN h.id_hotel AS id, h.nombre AS nombre
-    """
-    result_hoteles = graph.run(query_hoteles)
-
-    print("Lista de hoteles disponibles:")
-    for record in result_hoteles:
-        hotel_id = record['id']
-        hotel_nombre = record['nombre']
-        print(f"ID: {hotel_id}, Nombre: {hotel_nombre}")
-
-    # Solicitar al usuario que ingrese el ID del hotel
-    id_hotel = input("Introduce el ID del hotel para ver habitaciones disponibles: ")
 
     # Obtener reservas que interfieren con el rango de fechas solicitado
     reservas = reservas_collection.find({
@@ -265,7 +196,7 @@ def habitaciones_disponibles_en_hotel(fecha_inicio, fecha_fin):
 
     # Obtener IDs de habitaciones ocupadas
     habitaciones_ocupadas = {reserva["id_habitacion"] for reserva in reservas}
-    
+
     # Consultar habitaciones disponibles en el hotel seleccionado
     query_habitaciones = """
         MATCH (h:Hotel {id_hotel: $id_hotel})-[:TIENE]->(hab:Habitacion) 
@@ -274,62 +205,12 @@ def habitaciones_disponibles_en_hotel(fecha_inicio, fecha_fin):
     """
     
     # Ejecutar la consulta
-    result_habitaciones = graph.run(query_habitaciones, habitaciones_ocupadas=list(habitaciones_ocupadas), id_hotel=id_hotel)
+    result_habitaciones = graph.run(query_habitaciones, 
+                                     habitaciones_ocupadas=list(habitaciones_ocupadas), 
+                                     id_hotel=id_hotel)
 
-    # Comprobar si hay habitaciones disponibles
-    habitaciones_disponibles = [record['habitacion'] for record in result_habitaciones]
-
-    if habitaciones_disponibles:
-        print(f"Habitaciones disponibles en el hotel con ID {id_hotel}:")
-        for habitacion_id in habitaciones_disponibles:
-            print("-----------------------------------------------------")
-            print(f"Habitación disponible ID: {habitacion_id}")
-            print("-----------------------------------------------------")
-    else:
-        print(f"No hay habitaciones disponibles en el hotel con ID {id_hotel} para las fechas especificadas.")
-
-
-
-def amenities_habitacion():
-    # Consulta para obtener todas las habitaciones disponibles
-    query_habitaciones = """
-    MATCH (hotel:Hotel)-[:TIENE]->(habitacion:Habitacion)
-    RETURN hotel.nombre AS hotel_nombre, habitacion.id_habitacion AS id_habitacion, habitacion.tipo_habitacion AS tipo_habitacion
-    """
-    habitaciones_result = graph.run(query_habitaciones)
-
-    # Listar las habitaciones disponibles
-    print("Lista de habitaciones disponibles:")
-    habitaciones_disponibles = []
-    for record in habitaciones_result:
-        hotel_nombre = record['hotel_nombre']
-        id_habitacion = record['id_habitacion']
-        tipo_habitacion = record['tipo_habitacion']
-        habitaciones_disponibles.append(id_habitacion)
-        print(f"Hotel: {hotel_nombre}, Habitación ID: {id_habitacion}, Tipo: {tipo_habitacion}")
-
-    # Solicitar al usuario que elija una habitación
-    id_habitacion = input("Ingrese el ID de una habitación para ver sus amenities: ")
-
-    if id_habitacion not in habitaciones_disponibles:
-        print("El ID de habitación ingresado no está en la lista de habitaciones disponibles.")
-        return
-
-    # Consulta para obtener los amenities de la habitación seleccionada
-    query = """
-    MATCH (habitacion:Habitacion {id_habitacion: $id_habitacion})-[:TIENE_AMENITY]->(amenity:Amenity)
-    RETURN amenity.nombre AS nombre
-    """
-    result = graph.run(query, parameters={"id_habitacion": id_habitacion})
-
-    # Mostrar los amenities de la habitación seleccionada
-    print(f"\nAmenities de la habitación ID {id_habitacion}:")
-    for record in result:
-        amenity_nombre = record['nombre']
-        print("-----------------------------------------------------")
-        print(f"Amenity: {amenity_nombre}")
-        print("-----------------------------------------------------")
-
+    # Devolver las habitaciones disponibles
+    return [record['habitacion'] for record in result_habitaciones]
 
 
 # 8. Reservas por número de confirmación (ID en MongoDB)
@@ -487,5 +368,117 @@ def crear_reserva_si_disponible(id_habitacion, id_huesped, fecha_entrada, fecha_
 
     except Exception as e:
         return f"Error al crear la reserva: {e}"
+
+def listar_hoteles():
+    """Función para listar todos los hoteles disponibles con su ID y nombre."""
+    query_hoteles = """
+    MATCH (h:Hotel)
+    RETURN h.id_hotel AS id_hotel, h.nombre AS nombre
+    """
+    return graph.run(query_hoteles).data()
+    
+    
+def crear_reserva():
+    try:
+        # Mostrar lista de hoteles disponibles
+        query_hoteles = """
+        MATCH (hotel:Hotel)
+        RETURN hotel.id_hotel AS id_hotel, hotel.nombre AS nombre
+        """
+        hoteles = graph.run(query_hoteles).data()
+
+        print("Hoteles disponibles:")
+        for hotel in hoteles:
+            print(f"ID: {hotel['id_hotel']}, Nombre: {hotel['nombre']}")
+
+        id_hotel = input("Ingrese el ID del hotel donde desea hacer la reserva: ")
+
+        # Solicitar fechas de entrada y salida
+        fecha_entrada = input("Ingrese la fecha de entrada (YYYY-MM-DD): ")
+        fecha_salida = input("Ingrese la fecha de salida (YYYY-MM-DD): ")
+
+        # Obtener todos los huéspedes
+        huespedes = graph.run("MATCH (h:Huesped) RETURN h.id_huesped AS id_huesped, h.nombre AS nombre, h.apellido AS apellido").data()
+
+        # Comprobar si hay huéspedes y mostrar el conteo
+        num_huespedes = len(huespedes)
+
+        if num_huespedes > 0:
+            print("\nLista de huéspedes:")
+            for huesped in huespedes:
+                print(f"ID: {huesped['id_huesped']}, Nombre: {huesped['nombre']}, Apellido: {huesped['apellido']}")
+        else:
+            print("No hay huéspedes registrados en el sistema.")
+            return  # Salir si no hay huéspedes
+
+        id_huesped = input("Ingrese el ID del huésped: ")
+
+        # Llamar a la función de habitaciones disponibles
+        habitaciones_disponibles = habitaciones_disponibles_en_hotel(id_hotel, fecha_entrada, fecha_salida)
+        
+        if habitaciones_disponibles:
+            print(f"\nHabitaciones disponibles en el hotel con ID {id_hotel}:")
+            for habitacion_id in habitaciones_disponibles:
+                print(f"Habitación disponible ID: {habitacion_id}")
+
+            # Solicitar el ID de la habitación a reservar
+            id_habitacion = input("Ingrese el ID de la habitación que desea reservar: ")
+            precio = input("Ingrese el precio de la reserva: ")
+            print(crear_reserva_si_disponible(id_habitacion, id_huesped, fecha_entrada, fecha_salida, precio))
+        else:
+            print(f"No hay habitaciones disponibles en el hotel con ID {id_hotel} para las fechas especificadas.")
+
+    except Exception as e:
+        print(f"Error al crear la reserva: {e}")
+
+def listar_reservas():
+    # Obtener todas las reservas
+    reservas = reservas_collection.find()
+    lista_reservas = []
+
+    for reserva in reservas:
+        lista_reservas.append({
+            "id_reserva": str(reserva["_id"]),
+            "id_habitacion": reserva["id_habitacion"],
+            "id_huesped": reserva["id_huesped"],
+            "fecha_entrada": reserva["fecha_entrada"],
+            "fecha_salida": reserva["fecha_salida"],
+            "precio": reserva["precio"]
+        })
+
+    return lista_reservas
+
+def baja_reserva():
+    reservas = listar_reservas()
+    
+    if not reservas:
+        return "No hay reservas disponibles para eliminar."
+
+    print("Reservas disponibles:")
+    for reserva in reservas:
+        print(f"ID: {reserva['id_reserva']}, Habitación ID: {reserva['id_habitacion']}, "
+              f"Huésped ID: {reserva['id_huesped']}, Fecha Entrada: {reserva['fecha_entrada']}, "
+              f"Fecha Salida: {reserva['fecha_salida']}, Precio: {reserva['precio']}")
+
+    id_reserva = input("Ingrese el ID de la reserva a eliminar: ")
+    
+    # Validar que la reserva exista
+    reserva_existente = next((reserva for reserva in reservas if reserva["id_reserva"] == id_reserva), None)
+
+    if not reserva_existente:
+        return f"No se encontró la reserva con ID: {id_reserva}"
+
+    # Confirmar eliminación
+    confirmacion = input(f"¿Está seguro de que desea eliminar la reserva con ID {id_reserva}? (sí/no): ")
+    
+    if confirmacion.lower() == 'si':
+        # Eliminar la reserva de MongoDB
+        reservas_collection.delete_one({"_id": ObjectId(id_reserva)})
+        return f"Reserva con ID {id_reserva} eliminada exitosamente."
+    else:
+        return "Eliminación cancelada."
+
+
+
 
 

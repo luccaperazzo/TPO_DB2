@@ -24,6 +24,7 @@ def alta_amenity(nombre):
         return f"Error al crear el amenity: {e}"
 
 
+
 def mostrar_amenitys():
     # Obtener todos los amenities con sus IDs
     query = "MATCH (a:Amenity) RETURN a.id_amenity AS id, a.nombre AS nombre"

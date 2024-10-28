@@ -3,6 +3,8 @@ from funciones_huesped import *
 from funciones_hotel import *
 from funciones_poi import *
 from funciones_amenity import *
+import random
+
 
 
 
@@ -89,3 +91,57 @@ def crear_amenitys():
     for nombre in amenitys:
         resultado = alta_amenity(nombre)
         print(resultado)
+
+
+def crear_habitaciones():
+    try:
+        # Obtener la lista de hoteles
+        hoteles = mostrar_hoteles()
+        if not hoteles:
+            print("No hay hoteles disponibles para crear habitaciones.")
+            return
+
+        # Obtener la lista de amenities
+        amenitys = mostrar_amenitys()
+        if not amenitys:
+            print("No hay amenities disponibles para asignar a las habitaciones.")
+            return
+        
+        tipos_habitacion = ["Suite", "Doble", "Simple"]  # Tipos de habitación disponibles
+
+        for hotel in hoteles:
+            id_hotel = hotel["id"]
+            nombre_hotel = hotel["nombre"].replace(" ", "_")
+
+            for i in range(5):  # Crear 5 habitaciones por hotel
+                # Generar un nuevo ID de habitación
+                nuevo_id = i + 1
+                id_habitacion = f"{nombre_hotel}_{nuevo_id}"
+
+                # Seleccionar un tipo de habitación aleatorio
+                tipo_habitacion = random.choice(tipos_habitacion)
+
+                # Crear la habitación y relacionarla con el hotel
+                query = """
+                    MATCH (h:Hotel {id_hotel: $id_hotel})
+                    CREATE (h)-[:TIENE]->(:Habitacion {id_habitacion: $id_habitacion, tipo_habitacion: $tipo_habitacion})
+                """
+                graph.run(query, id_hotel=id_hotel, id_habitacion=id_habitacion, tipo_habitacion=tipo_habitacion)
+                print(f"Habitación '{id_habitacion}' de tipo '{tipo_habitacion}' creada exitosamente en el hotel '{nombre_hotel}'.")
+
+                # Asignar entre 0 y 4 amenities a la habitación
+                num_amenities = random.randint(0, 4)  # Número aleatorio de amenities
+                selected_amenities = random.sample(amenitys, num_amenities)  # Seleccionar amenities aleatorios
+
+                for amenity in selected_amenities:
+                    # Crear la relación entre la habitación y el amenity
+                    query = """
+                        MATCH (a:Amenity {id_amenity: $id_amenity})
+                        MATCH (h:Habitacion {id_habitacion: $id_habitacion})
+                        CREATE (h)-[:INCLUYE]->(a)
+                    """
+                    graph.run(query, id_habitacion=id_habitacion, id_amenity=amenity["id"])
+                    print(f"Amenity con ID {amenity['id']} asignado a la habitación {id_habitacion} exitosamente.")
+
+    except Exception as e:
+        print(f"Error al crear las habitaciones: {e}")

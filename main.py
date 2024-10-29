@@ -89,10 +89,10 @@ def gestionar_entidad():
                                     telefono if telefono else None, email if email else None))
             
             elif entidad == '2':  # Habitación
-                print(modificar_habitacion())
+                modificar_habitacion()
             
             elif entidad == '3':  # Amenity
-                print(modificar_amenity())
+                modificar_amenity()
             
             elif entidad == '4':  # POI
                 intentos = 0

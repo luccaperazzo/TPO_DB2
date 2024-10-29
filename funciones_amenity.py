@@ -30,7 +30,8 @@ def mostrar_amenitys():
     query = "MATCH (a:Amenity) RETURN a.id_amenity AS id, a.nombre AS nombre"
     result = graph.run(query).data()
     
-    return result
+    return result  # Retornamos la lista de amenities
+
 
 def baja_amenity():
     try:
@@ -115,3 +116,4 @@ def modificar_amenity():
 
     except Exception as e:
         print(f"Error al intentar modificar el amenity: {e}")
+

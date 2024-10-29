@@ -229,7 +229,7 @@ def modificar_habitacion():
                     SET h.tipo_habitacion = $nuevo_tipo
                 """
                 graph.run(query_update_tipo, id_habitacion=id_habitacion, nuevo_tipo=nuevo_tipo)
-                print(f"Tipo de habitación actualizado a '{nuevo_tipo}'.")
+                print(f"Tipo de habitación actualizado a '{nuevo_tipo}'.")  # Mensaje de éxito
 
         modificar_amenities = input("¿Desea modificar los amenities? (s/n): ").lower()
         if modificar_amenities == 's':
@@ -239,12 +239,11 @@ def modificar_habitacion():
                 print("No hay amenities disponibles para asignar.")
                 return
             
-            print("Amenidades disponibles:")
-
-            # Obtener IDs de amenities a asignar
+            # Aquí ahora no se imprimirá 'None' si no hay amenities
             ids_amenities_input = input("Ingrese los IDs de los amenities que desea asignar, separados por comas (o presione Enter para eliminar todos): ")
             if ids_amenities_input.strip():  # Si el usuario ingresó algo
                 ids_amenities = [id.strip() for id in ids_amenities_input.split(",")]
+                
                 # Eliminar las relaciones actuales
                 query_delete_current = """
                     MATCH (h:Habitacion {id_habitacion: $id_habitacion})-[r:INCLUYE]->(a:Amenity)
@@ -267,6 +266,8 @@ def modificar_habitacion():
                     """
                     graph.run(query_add_amenity, id_habitacion=id_habitacion, id_amenity=id_amenity)
                     print(f"Amenity con ID {id_amenity} asignado a la habitación {id_habitacion} exitosamente.")
+                
+                print("Modificación de amenities completada.")  # Mensaje de éxito
             else:
                 # Eliminar todas las relaciones de amenities
                 query_delete_all = """
@@ -274,10 +275,11 @@ def modificar_habitacion():
                     DELETE r
                 """
                 graph.run(query_delete_all, id_habitacion=id_habitacion)
-                print(f"Todas las relaciones de amenities han sido eliminadas de la habitación {id_habitacion}.")
+                print(f"Todas las relaciones de amenities han sido eliminadas de la habitación {id_habitacion}.")  # Mensaje de éxito
 
     except Exception as e:
         print(f"Error al modificar la habitación: {e}")
+
 
 
 def mostrar_amenities_habitacion():

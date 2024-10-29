@@ -76,44 +76,50 @@ def baja_amenity():
     
 def modificar_amenity():
     try:
-        while True:
-            # Mostrar las amenidades actuales
-            amenitys = mostrar_amenitys()
-            if not amenitys:
-                print("No hay amenidades disponibles para modificar.")
-                return
-            
-            # Solicitar el ID de la amenidad a modificar
-            id_amenity = input("Ingrese el ID de la amenidad que desea modificar: ")
+        # Mostrar las amenidades actuales
+        amenitys = mostrar_amenitys()
+        if not amenitys:
+            print("No hay amenidades disponibles para modificar.")
+            return
+        
+        # Solicitar el ID de la amenidad a modificar
+        id_amenity = input("Ingrese el ID de la amenidad que desea modificar: ")
 
-            # Verificar si el ID ingresado existe en la lista de amenidades
-            if not any(amenity["id"] == id_amenity for amenity in amenitys):
-                print(f"El ID {id_amenity} no existe. Por favor, seleccione un ID válido.")
-                continue  # Repetir el bucle para solicitar un ID válido
-            
+        # Verificar si el ID ingresado existe en la lista de amenidades
+        if not any(amenity["id"] == id_amenity for amenity in amenitys):
+            print(f"El ID {id_amenity} no existe. Por favor, seleccione un ID válido.")
+            return  # Terminar la función si el ID no es válido
+        
+        while True:  # Repetir hasta que se ingrese un nombre válido
             # Solicitar el nuevo nombre para la amenidad
-            nuevo_nombre = input("Ingrese el nuevo nombre para la amenidad: ")
+            nuevo_nombre = input("Ingrese el nuevo nombre para la amenidad: ").strip()  # Strip para eliminar espacios
 
-            # Modificar el nombre de la amenidad
-            query = """
-                MATCH (a:Amenity {id_amenity: $id_amenity})
-                SET a.nombre = $nombre
-            """
-            graph.run(query, id_amenity=id_amenity, nombre=nuevo_nombre)
-            
-            # Verificar si la modificación se realizó correctamente
-            verificar_query = """
-                MATCH (a:Amenity {id_amenity: $id_amenity}) RETURN a.nombre AS nombre
-            """
-            result = graph.run(verificar_query, id_amenity=id_amenity).data()
-
-            # Confirmación de modificación
-            if result and result[0]["nombre"] == nuevo_nombre:
-                print(f"Amenity con ID {id_amenity} modificado exitosamente. Nuevo nombre: {nuevo_nombre}")
+            # Validar que el nuevo nombre no esté vacío
+            if not nuevo_nombre:
+                print("El nombre de la amenidad no puede estar vacío. Intente nuevamente.")
             else:
-                print(f"No se pudo modificar el amenity con ID {id_amenity}. Intente nuevamente.")
-            break  # Salir del bucle después de una modificación exitosa o fallida
+                break  # Salir del bucle si se ingresó un nombre válido
+
+        # Modificar el nombre de la amenidad
+        query = """
+            MATCH (a:Amenity {id_amenity: $id_amenity})
+            SET a.nombre = $nombre
+        """
+        graph.run(query, id_amenity=id_amenity, nombre=nuevo_nombre)
+        
+        # Verificar si la modificación se realizó correctamente
+        verificar_query = """
+            MATCH (a:Amenity {id_amenity: $id_amenity}) RETURN a.nombre AS nombre
+        """
+        result = graph.run(verificar_query, id_amenity=id_amenity).data()
+
+        # Confirmación de modificación
+        if result and result[0]["nombre"] == nuevo_nombre:
+            print(f"Amenity con ID {id_amenity} modificado exitosamente. Nuevo nombre: {nuevo_nombre}")
+        else:
+            print(f"No se pudo modificar el amenity con ID {id_amenity}. Intente nuevamente.")
 
     except Exception as e:
         print(f"Error al intentar modificar el amenity: {e}")
+
 

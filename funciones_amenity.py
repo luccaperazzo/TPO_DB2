@@ -30,15 +30,7 @@ def mostrar_amenitys():
     query = "MATCH (a:Amenity) RETURN a.id_amenity AS id, a.nombre AS nombre"
     result = graph.run(query).data()
     
-    # Mostrar amenidades disponibles
-    if result:
-        print("Amenidades disponibles:")
-        for amenity in result:
-            print(f"ID: {amenity['id']}, Nombre: {amenity['nombre']}")
-        return result  # Retornamos la lista de amenities para verificación
-    else:
-        print("No hay amenidades disponibles.")
-        return None
+    return result
 
 def baja_amenity():
     try:

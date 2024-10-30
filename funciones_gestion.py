@@ -309,6 +309,7 @@ def reservas_por_fecha_en_hotel(fecha_inicio, fecha_fin):
                 print(f"Fecha de salida: {reserva['fecha_salida']}")
                 print(f"Huésped ID: {reserva['id_huesped']}")
                 print(f"ID de habitación: {reserva['id_habitacion']}")
+                print(f"Precio : {reserva['precio']}")
                 print("-----------------------------------------------------")
         else:
             print("No se encontraron reservas para ese rango de fechas y hotel.")

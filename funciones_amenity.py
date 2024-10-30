@@ -19,29 +19,40 @@ def alta_amenity(nombre):
             CREATE (:Amenity {id_amenity: $id_amenity, nombre: $nombre})
         """
         graph.run(query, id_amenity=str(nuevo_id), nombre=nombre)
+        print("Amenity creado en la base de datos.")
         return f"Amenity '{nombre}' creado exitosamente."
     except Exception as e:
+        print(f"Excepción encontrada: {e}")
         return f"Error al crear el amenity: {e}"
 
 
 
 def mostrar_amenitys():
-    # Obtener todos los amenities con sus IDs
-    query = "MATCH (a:Amenity) RETURN a.id_amenity AS id, a.nombre AS nombre"
-    result = graph.run(query).data()
-    
-    return result  # Retornamos la lista de amenities
+    try:
+        # Obtener todos los amenities con sus IDs
+        query = "MATCH (a:Amenity) RETURN a.id_amenity AS id, a.nombre AS nombre"
+        result = graph.run(query).data()
+
+        # Mostrar los IDs y nombres de las amenidades
+        if result:
+            for record in result:
+                id_amenity = record['id']
+                nombre = record['nombre']
+                print(f"ID: {id_amenity}, Nombre: {nombre}")
+        else:
+            print("No hay amenidades disponibles en la base de datos.")
+
+    except Exception as e:
+        print(f"Error al obtener las amenidades: {e}")
 
 
 def baja_amenity():
     try:
         while True:
             # Mostrar las amenidades actuales
-            amenitys = mostrar_amenitys()
-            if not amenitys:
-                print("No hay amenidades disponibles para eliminar.")
-                return
-            
+            mostrar_amenitys()
+    
+    
             # Solicitar el ID de la amenidad a eliminar
             id_amenity = input("Ingrese el ID de la amenidad que desea eliminar: ")
             

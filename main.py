@@ -39,21 +39,21 @@ def gestionar_entidad():
                 direccion = input("Ingrese la dirección del hotel: ")
                 telefono = input("Ingrese el teléfono del hotel: ")
                 email = input("Ingrese el email del hotel: ")
-                print(alta_hotel(nombre, direccion, telefono, email))
+                alta_hotel(nombre, direccion, telefono, email)
             
             elif entidad == '2':  # Habitación
-               print(alta_habitacion())
+               alta_habitacion()
             
             elif entidad == '3':  # Amenity
                 nombre = input("Ingrese el nombre del amenity: ")
-                print(alta_amenity(nombre))
+                alta_amenity(nombre)
             
             elif entidad == '4':  # POI
                 nombre = input("Ingrese el nombre del POI: ")
                 detalle = input("Ingrese el detalle del POI: ")
                 direccion = input("Ingrese la direccion del POI: ")
                 tipo = input("Ingrese el tipo del POI: ")
-                print(alta_poi(nombre, detalle, direccion, tipo))
+                alta_poi(nombre, detalle, direccion, tipo)
                 
             elif entidad == '5':  # Huésped
                 nombre = input("Ingrese el nombre del huésped: ")
@@ -61,7 +61,7 @@ def gestionar_entidad():
                 direccion = input("Ingrese la dirección del huésped: ")
                 telefono = input("Ingrese el teléfono del huésped: ")
                 email = input("Ingrese el email del huésped: ")
-                print(alta_huesped(nombre, apellido, direccion, telefono, email))
+                alta_huesped(nombre, apellido, direccion, telefono, email)
             
             elif entidad == '6':  # Reserva
                 crear_reserva()
@@ -81,12 +81,8 @@ def gestionar_entidad():
                     print("Demasiados intentos fallidos. Volviendo al menú principal.")
                     continue  # Volver al menú principal si falla después de 2 intentos
                 else:
-                    nombre = input("Ingrese el nuevo nombre del hotel (o presione Enter para omitir): ")
-                    direccion = input("Ingrese la nueva dirección del hotel (o presione Enter para omitir): ")
-                    telefono = input("Ingrese el nuevo teléfono del hotel (o presione Enter para omitir): ")
-                    email = input("Ingrese el nuevo email del hotel (o presione Enter para omitir): ")
-                    print(modificar_hotel(id_hotel, nombre if nombre else None, direccion if direccion else None,
-                                    telefono if telefono else None, email if email else None))
+                    
+                    modificar_hotel()
             
             elif entidad == '2':  # Habitación
                 modificar_habitacion()
@@ -111,43 +107,24 @@ def gestionar_entidad():
                     detalle = input("Ingrese el nuevo detalle del POI (o presione Enter para omitir): ")
                     direccion = input("Ingrese la nueva direccion del POI (o presione Enter para omitir): ")
                     tipo = input("Ingrese el nuevo tipo del POI (o presione Enter para omitir): ")
-                    print(modificar_poi(id_poi, nombre if nombre else None, detalle if detalle else None, 
-                                    direccion if direccion else None, tipo if tipo else None))
+                    modificar_poi(id_poi, nombre if nombre else None, detalle if detalle else None, 
+                                    direccion if direccion else None, tipo if tipo else None)
                 
             elif entidad == '5':  # Huésped
-                id_huesped = input("Ingrese el ID del huesped a modificar: ")
-                nombre = input("Ingrese el nombre del huésped: ")
-                apellido = input("Ingrese el apellido del huésped: ")
-                direccion = input("Ingrese la dirección del huésped: ")
-                telefono = input("Ingrese el teléfono del huésped: ")
-                email = input("Ingrese el email del huésped: ")
-                print(modificar_huesped(id_huesped, nombre, apellido, direccion, telefono, email))
+                modificar_huesped()
 
         elif opcion == '3':  # Eliminar
-            if entidad == '1':  # Hotel
-                intentos = 0
-                while intentos < 2:
-                    id_hotel = listar_hoteles()
-                    if not id_hotel:
-                        print("ID inválido o no encontrado. Intente nuevamente.")
-                        intentos += 1
-                    else:
-                        break
-                if intentos == 2:
-                    print("Demasiados intentos fallidos. Volviendo al menú principal.")
-                    continue  # Volver al menú principal si falla después de 2 intentos
-                if intentos <2:
-                    print(baja_hotel(id_hotel))
-            
+            if entidad == '1' :
+                baja_hotel()
+                
             elif entidad == '2':  # Habitación
-                print(baja_habitacion())
+                baja_habitacion()
             
             elif entidad == '3':  # Amenity
-                print(baja_amenity())
+                baja_amenity()
             
             elif entidad == '4':  # POI
-                id_poi = input("Ingrese el ID del POI a eliminar: ")
-                print(baja_poi(id_poi))
+                baja_poi()
 
             elif entidad == '6': #Reserva
                 resultado = baja_reserva()

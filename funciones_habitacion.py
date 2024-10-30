@@ -48,36 +48,46 @@ def alta_habitacion():
         # Paso 4: Mostrar amenities disponibles y permitir la selección
         amenitys = mostrar_amenitys()
         if not amenitys:
-            print("No hay amenities disponibles para asignar a la habitación.")
-        else:
-            print("Amenidades disponibles:")
-            for amenity in amenitys:
-                print(f"ID: {amenity['id']}, Nombre: {amenity['nombre']}")
-            
-            # Seleccionar amenities para la habitación
-            ids_amenities = input("Ingrese los IDs de los amenities que desea asignar a la habitación, separados por comas (o presione Enter para omitir): ")
-            if ids_amenities.strip():  # Solo proceder si el usuario ingresó algo
-                ids_amenities = ids_amenities.split(",")
-                for id_amenity in ids_amenities:
-                    id_amenity = id_amenity.strip()
-                    # Verificar si el ID del amenity es válido
-                    if not any(amenity["id"] == id_amenity for amenity in amenitys):
-                        print(f"El ID {id_amenity} no es válido o no existe en la lista de amenities.")
-                        continue
-                    
-                    # Crear la relación entre la habitación y el amenity
-                    query = """
-                        MATCH (a:Amenity {id_amenity: $id_amenity})
-                        MATCH (h:Habitacion {id_habitacion: $id_habitacion})
-                        CREATE (h)-[:INCLUYE]->(a)
-                    """
-                    graph.run(query, id_habitacion=id_habitacion, id_amenity=id_amenity)
-                    print(f"Amenity con ID {id_amenity} asignado a la habitación {id_habitacion} exitosamente.")
+            crear_nuevo = input("No hay amenities disponibles. ¿Desea crear uno nuevo? (s/n): ")
+            if crear_nuevo.lower() == 's':
+                nombre_amenity = input("Ingrese el nombre del nuevo amenity: ")
+                resultado = alta_amenity(nombre_amenity)
+                print(resultado)
+                # Volver a cargar los amenities después de crear uno nuevo
+                amenitys = mostrar_amenitys()
+            else:
+                print("No se asignarán amenities a la habitación.")
+                return
+
+        print("Amenidades disponibles:")
+        for amenity in amenitys:
+            print(f"ID: {amenity['id']}, Nombre: {amenity['nombre']}")
+        
+        # Seleccionar amenities para la habitación
+        ids_amenities = input("Ingrese los IDs de los amenities que desea asignar a la habitación, separados por comas (o presione Enter para omitir): ")
+        if ids_amenities.strip():  # Solo proceder si el usuario ingresó algo
+            ids_amenities = ids_amenities.split(",")
+            for id_amenity in ids_amenities:
+                id_amenity = id_amenity.strip()
+                # Verificar si el ID del amenity es válido
+                if not any(amenity["id"] == id_amenity for amenity in amenitys):
+                    print(f"El ID {id_amenity} no es válido o no existe en la lista de amenities.")
+                    continue
+                
+                # Crear la relación entre la habitación y el amenity
+                query = """
+                    MATCH (a:Amenity {id_amenity: $id_amenity})
+                    MATCH (h:Habitacion {id_habitacion: $id_habitacion})
+                    CREATE (h)-[:INCLUYE]->(a)
+                """
+                graph.run(query, id_habitacion=id_habitacion, id_amenity=id_amenity)
+                print(f"Amenity con ID {id_amenity} asignado a la habitación {id_habitacion} exitosamente.")
 
         print(f"Creación completa de la habitación '{id_habitacion}' en el hotel '{hotel_seleccionado['nombre']}'.")
 
     except Exception as e:
         print(f"Error al crear la habitación: {e}")
+
 
    
 def baja_habitacion():

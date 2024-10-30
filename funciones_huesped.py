@@ -28,8 +28,27 @@ def alta_huesped(nombre, apellido, direccion, telefono, email):
     except Exception as e:
         return f"Error al crear el huésped: {e}"
     
-def modificar_huesped(id_huesped, nombre=None, apellido=None, direccion=None, telefono=None, email=None):
+def modificar_huesped():
     try:
+        get_huespedes()
+        # Pedir el ID del huésped por input
+        id_huesped = input("Ingrese el ID del huésped que desea modificar: ")
+        
+        # Verificar si el ID del huésped existe
+        query_verificar = "MATCH (h:Huesped {id_huesped: $id_huesped}) RETURN h"
+        resultado = graph.run(query_verificar, id_huesped=id_huesped).data()
+        
+        if not resultado:
+            print(f"Error: No se encontró ningún huésped con el ID {id_huesped}.")
+            return
+        
+        # Solicitar los campos a modificar
+        nombre = input("Ingrese el nuevo nombre (deje vacío si no desea cambiarlo): ") or None
+        apellido = input("Ingrese el nuevo apellido (deje vacío si no desea cambiarlo): ") or None
+        direccion = input("Ingrese la nueva dirección (deje vacío si no desea cambiarla): ") or None
+        telefono = input("Ingrese el nuevo teléfono (deje vacío si no desea cambiarlo): ") or None
+        email = input("Ingrese el nuevo email (deje vacío si no desea cambiarlo): ") or None
+
         # Actualizar solo los campos que no son None
         update_fields = []
         if nombre:
@@ -44,16 +63,19 @@ def modificar_huesped(id_huesped, nombre=None, apellido=None, direccion=None, te
             update_fields.append(f"h.email = '{email}'")
         
         if not update_fields:
-            return "No se proporcionó ningún campo para modificar."
+            print("No se proporcionó ningún campo para modificar.")
+            return
         
-        query = f"""
+        query_modificar = f"""
             MATCH (h:Huesped {{id_huesped: $id_huesped}})
             SET {', '.join(update_fields)}
         """
-        graph.run(query, id_huesped=id_huesped)
-        return f"Huésped con ID {id_huesped} modificado exitosamente."
+        graph.run(query_modificar, id_huesped=id_huesped)
+        print(f"Huésped con ID {id_huesped} modificado exitosamente.")
+    
     except Exception as e:
-        return f"Error al modificar el huésped: {e}"
+        print(f"Error al modificar el huésped: {e}")
+
 
 ## Consultas 
 def ver_detalles_huesped():

@@ -5,6 +5,8 @@ from crear_entidades import *
 from funciones_gestion import *
 from funciones_amenity import *
 from funciones_habitacion import *
+from funciones_huesped import *
+
 
 graph = Graph("bolt://neo4j:12345678@localhost:7687")
 client = MongoClient('mongodb://localhost:27017/')
@@ -31,6 +33,7 @@ def gestionar_entidad():
             print("3. Amenity")
             print("4. POI")
             print("5. Huésped")
+            print("6. Reserva")
             entidad = input("Ingrese el número de la entidad (1-6): ")
 
         if opcion == '1':  # Crear
@@ -152,10 +155,12 @@ def gestionar_entidad():
             elif consulta == '3':
                 pois_cerca_de_hotel()
             elif consulta == '4':  # Habitaciones disponibles
+                    mostrar_hoteles()
+                    id_hotel = input("Ingrese el id del hotel : ")
                     fecha_entrada = input("Ingrese la fecha de entrada (YYYY-MM-DD): ")
                     fecha_salida = input("Ingrese la fecha de salida (YYYY-MM-DD): ")
                     # Llama a la función y filtra las habitaciones por hotel
-                    habitaciones_disponibles_en_hotel(fecha_entrada, fecha_salida)
+                    habitaciones_disponibles_en_hotel(id_hotel,fecha_entrada, fecha_salida)
                     
             elif consulta == '5':
                 mostrar_amenities_habitacion()

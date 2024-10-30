@@ -10,6 +10,30 @@ client = MongoClient('mongodb://localhost:27017/')
 db = client['hotel_db']
 reservas_collection = db['reservas']
 
+def mostrar_reservas_con_numero_confirmacion():
+    try:
+        # Obtener todas las reservas y su número de confirmación
+        reservas = list(reservas_collection.find({}, {"_id": 1, "id_huesped": 1, "fecha_entrada": 1, "fecha_salida": 1, "id_habitacion": 1}))
+
+        # Verificar si existen reservas
+        if not reservas:
+            print("No hay reservas disponibles.")
+            return
+
+        # Mostrar la información de cada reserva
+        print("Lista de reservas y sus números de confirmación:")
+        for reserva in reservas:
+            numero_confirmacion = reserva["_id"]
+            id_huesped = reserva["id_huesped"]
+            print(f"Reserva ID (Número de confirmación): {numero_confirmacion}, Huésped ID: {id_huesped}")
+            print("-----------------------------------------------------")
+
+    except Exception as e:
+        print(f"Error al obtener las reservas con número de confirmación: {e}")
+
+
+
+
 # Funciones Huesped
 def alta_huesped(nombre, apellido, direccion, telefono, email):
     try:

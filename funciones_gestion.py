@@ -3,6 +3,7 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 from datetime import datetime
 from funciones_huesped import *
+from funciones_hotel import *
 
 # --- Conexiones ---
 graph = Graph("bolt://neo4j:12345678@localhost:7687")
@@ -177,6 +178,7 @@ def pois_cerca_de_hotel():
 # Función para obtener habitaciones disponibles en un hotel para un rango de fechas
 def habitaciones_disponibles_en_hotel(id_hotel, fecha_inicio, fecha_fin):
     # Convertir fechas a objetos datetime
+    mostrar_hoteles()
     fecha_inicio = datetime.strptime(fecha_inicio, "%Y-%m-%d")
     fecha_fin = datetime.strptime(fecha_fin, "%Y-%m-%d")
 
@@ -226,7 +228,7 @@ def validar_reserva_id(reserva_id):
 
 def reservas_por_numero_confirmacion():
     print("Lista de huéspedes disponibles:")
-    get_huespedes()
+    mostrar_reservas_con_numero_confirmacion()
 
     reserva_id = input("Ingrese el número de confirmación de un huésped para ver su reserva: ")
     
@@ -253,9 +255,11 @@ def reservas_por_numero_confirmacion():
 
 
 # 10. Traer las reservas por fecha de reserva en el hotel.
+from datetime import datetime
+
 def reservas_por_fecha_en_hotel(fecha_inicio, fecha_fin):
     try:
-        # Mostrar lista de hoteles disponibles
+        # Mostrar lista de hoteles disponibles en Neo4j
         query_hoteles = """
         MATCH (hotel:Hotel)
         RETURN hotel.id_hotel AS id_hotel, hotel.nombre AS nombre
@@ -273,22 +277,36 @@ def reservas_por_fecha_en_hotel(fecha_inicio, fecha_fin):
         fecha_inicio_obj = datetime.strptime(fecha_inicio, "%Y-%m-%d")
         fecha_fin_obj = datetime.strptime(fecha_fin, "%Y-%m-%d")
 
-        # Consultar reservas en MongoDB para el hotel seleccionado y el rango de fechas
+        # Consultar reservas en MongoDB en el rango de fechas
         reservas = list(reservas_collection.find({
-            "id_hotel": hotel_id,
-            "fecha_reserva": {
-                "$gte": fecha_inicio_obj,
-                "$lte": fecha_fin_obj
-            }
+            "fecha_entrada": {"$gte": fecha_inicio},
+            "fecha_salida": {"$lte": fecha_fin}
         }))
 
-        # Mostrar las reservas si existen
-        if reservas:
+        # Filtrar reservas que pertenecen al hotel específico
+        reservas_filtradas = []
+        for reserva in reservas:
+            id_habitacion = reserva["id_habitacion"]
+
+            # Consultar en Neo4j para obtener el hotel de la habitación
+            query_hotel_habitacion = """
+            MATCH (hotel:Hotel)-[:TIENE]->(habitacion:Habitacion {id_habitacion: $id_habitacion})
+            RETURN hotel.id_hotel AS id_hotel
+            """
+            resultado_hotel = graph.run(query_hotel_habitacion, id_habitacion=id_habitacion).data()
+
+            # Verificar si el hotel coincide con el seleccionado
+            if resultado_hotel and resultado_hotel[0]["id_hotel"] == hotel_id:
+                reservas_filtradas.append(reserva)
+
+        # Mostrar las reservas del hotel seleccionado en el rango de fechas
+        if reservas_filtradas:
             print(f"\nReservas para el hotel ID {hotel_id} en el rango de fechas especificado:")
-            for reserva in reservas:
+            for reserva in reservas_filtradas:
                 print("-----------------------------------------------------")
                 print(f"Reserva ID: {reserva['_id']}")
-                print(f"Fecha de reserva: {reserva['fecha_reserva']}")
+                print(f"Fecha de entrada: {reserva['fecha_entrada']}")
+                print(f"Fecha de salida: {reserva['fecha_salida']}")
                 print(f"Huésped ID: {reserva['id_huesped']}")
                 print(f"ID de habitación: {reserva['id_habitacion']}")
                 print("-----------------------------------------------------")
@@ -297,6 +315,7 @@ def reservas_por_fecha_en_hotel(fecha_inicio, fecha_fin):
 
     except Exception as e:
         print(f"Error al obtener las reservas por fecha en el hotel: {e}")
+
 
 
 

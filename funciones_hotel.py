@@ -83,26 +83,61 @@ def alta_hotel(nombre, direccion, telefono, email):
         return f"Error al crear el hotel: {e}"
     
     
-def baja_hotel(id_hotel):
+def baja_hotel():
+    
+    mostrar_hoteles()
+
+    id_hotel = input("Ingrese el ID del hotel que desea eliminar: ")
+    
     try:
-        # Eliminar el hotel y todas sus relaciones
+        # Verificar si el hotel existe
+        check_query = """
+            MATCH (h:Hotel {id_hotel: $id_hotel})
+            RETURN h IS NOT NULL AS exists
+        """
+        exists_result = graph.run(check_query, id_hotel=id_hotel).data()
+        
+        if not exists_result or not exists_result[0]['exists']:
+            print('No se encontro hotel con ese ID')
+            return f"No se encontró un hotel con ID {id_hotel}."
+
+        # Si el hotel existe, proceder a eliminarlo
         query = """
             MATCH (h:Hotel {id_hotel: $id_hotel}) 
             DETACH DELETE h
         """
         graph.run(query, id_hotel=id_hotel)
+        print('Hotel eliminado')
         return f"Hotel con ID {id_hotel} eliminado exitosamente."
     except Exception as e:
+        print('Error al eliminar el hotel')
         return f"Error al eliminar el hotel: {e}"
+
+
     
     
     
-def modificar_hotel(id_hotel, nombre=None, direccion=None, telefono=None, email=None):
-    
+def modificar_hotel():
+    mostrar_hoteles()
     try:
-        # Actualizar solo los campos que no son None
-        update_fields = []
+        # Solicitar el ID del hotel
+        id_hotel = input("Ingrese el ID del hotel a modificar: ")
+
+        # Comprobar si el hotel existe
+        hotel_existe = graph.run("MATCH (h:Hotel {id_hotel: $id_hotel}) RETURN h", id_hotel=id_hotel).data()
+        if not hotel_existe:
+            print("El ID del hotel no es válido o no existe.")
+            return
         
+        # Solicitar los datos a modificar
+        nombre = input("Ingrese el nuevo nombre del hotel (o presione Enter para dejar igual): ")
+        direccion = input("Ingrese la nueva dirección del hotel (o presione Enter para dejar igual): ")
+        telefono = input("Ingrese el nuevo teléfono del hotel (o presione Enter para dejar igual): ")
+        email = input("Ingrese el nuevo email del hotel (o presione Enter para dejar igual): ")
+        
+        # Actualizar solo los campos proporcionados
+        update_fields = []
+
         if nombre:
             update_fields.append(f"h.nombre = '{nombre}'")
         if direccion:
@@ -115,31 +150,41 @@ def modificar_hotel(id_hotel, nombre=None, direccion=None, telefono=None, email=
             update_fields.append(f"h.telefono = '{telefono}'")
         if email:
             update_fields.append(f"h.email = '{email}'")
+
+        # Si no se proporciona ningún campo, salir
         if not update_fields:
-            return "No se proporcionó ningún campo para modificar."
+            print("No se proporcionó ningún campo para modificar.")
+            return
+
+        # Ejecutar la actualización del hotel
         query = f"""
             MATCH (h:Hotel {{id_hotel: $id_hotel}})
             SET {', '.join(update_fields)}
         """
-        result = graph.run(query, id_hotel=id_hotel)
-
+        graph.run(query, id_hotel=id_hotel)
+        
+        # Reasignar POIs si se cambió la dirección
         if direccion:
+            # Eliminar relaciones antiguas de proximidad
             delete_query = """
                 MATCH (h:Hotel {id_hotel: $id_hotel})-[r:CERCA_DE]->(p:POI)
                 DELETE r
             """
             graph.run(delete_query, id_hotel=id_hotel)
 
+            # Crear nuevas relaciones de proximidad con los POIs cercanos
             create_query = """
                 MATCH (h:Hotel {id_hotel: $id_hotel}), (p:POI)
                 WHERE point.distance(point({latitude: h.latitude, longitude: h.longitude}), point({latitude: p.latitude, longitude: p.longitude})) < 1000
                 CREATE (h)-[:CERCA_DE {distancia: point.distance(point({latitude: h.latitude, longitude: h.longitude}), point({latitude: p.latitude, longitude: p.longitude}))}]->(p)
             """
-            graph.run(create_query, id_hotel=str(id_hotel))
+            graph.run(create_query, id_hotel=id_hotel)
 
-        return f"Hotel con ID {id_hotel} modificado exitosamente."
+        print(f"Hotel con ID {id_hotel} modificado exitosamente.")
+
     except Exception as e:
-        return f"Error al modificar el hotel: {e}"
+        print(f"Error al modificar el hotel: {e}")
+
     
 
 def listar_hoteles_2():

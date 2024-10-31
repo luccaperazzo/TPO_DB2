@@ -10,6 +10,30 @@ client = MongoClient('mongodb://localhost:27017/')
 db = client['hotel_db']
 reservas_collection = db['reservas']
 
+def mostrar_reservas_con_numero_confirmacion():
+    try:
+        # Obtener todas las reservas y su número de confirmación
+        reservas = list(reservas_collection.find({}, {"_id": 1, "id_huesped": 1, "fecha_entrada": 1, "fecha_salida": 1, "id_habitacion": 1}))
+
+        # Verificar si existen reservas
+        if not reservas:
+            print("No hay reservas disponibles.")
+            return
+
+        # Mostrar la información de cada reserva
+        print("Lista de reservas y sus números de confirmación:")
+        for reserva in reservas:
+            numero_confirmacion = reserva["_id"]
+            id_huesped = reserva["id_huesped"]
+            print(f"Reserva ID (Número de confirmación): {numero_confirmacion}, Huésped ID: {id_huesped}")
+            print("-----------------------------------------------------")
+
+    except Exception as e:
+        print(f"Error al obtener las reservas con número de confirmación: {e}")
+
+
+
+
 # Funciones Huesped
 def alta_huesped(nombre, apellido, direccion, telefono, email):
     try:
@@ -28,8 +52,27 @@ def alta_huesped(nombre, apellido, direccion, telefono, email):
     except Exception as e:
         return f"Error al crear el huésped: {e}"
     
-def modificar_huesped(id_huesped, nombre=None, apellido=None, direccion=None, telefono=None, email=None):
+def modificar_huesped():
     try:
+        get_huespedes()
+        # Pedir el ID del huésped por input
+        id_huesped = input("Ingrese el ID del huésped que desea modificar: ")
+        
+        # Verificar si el ID del huésped existe
+        query_verificar = "MATCH (h:Huesped {id_huesped: $id_huesped}) RETURN h"
+        resultado = graph.run(query_verificar, id_huesped=id_huesped).data()
+        
+        if not resultado:
+            print(f"Error: No se encontró ningún huésped con el ID {id_huesped}.")
+            return
+        
+        # Solicitar los campos a modificar
+        nombre = input("Ingrese el nuevo nombre (deje vacío si no desea cambiarlo): ") or None
+        apellido = input("Ingrese el nuevo apellido (deje vacío si no desea cambiarlo): ") or None
+        direccion = input("Ingrese la nueva dirección (deje vacío si no desea cambiarla): ") or None
+        telefono = input("Ingrese el nuevo teléfono (deje vacío si no desea cambiarlo): ") or None
+        email = input("Ingrese el nuevo email (deje vacío si no desea cambiarlo): ") or None
+
         # Actualizar solo los campos que no son None
         update_fields = []
         if nombre:
@@ -44,16 +87,19 @@ def modificar_huesped(id_huesped, nombre=None, apellido=None, direccion=None, te
             update_fields.append(f"h.email = '{email}'")
         
         if not update_fields:
-            return "No se proporcionó ningún campo para modificar."
+            print("No se proporcionó ningún campo para modificar.")
+            return
         
-        query = f"""
+        query_modificar = f"""
             MATCH (h:Huesped {{id_huesped: $id_huesped}})
             SET {', '.join(update_fields)}
         """
-        graph.run(query, id_huesped=id_huesped)
-        return f"Huésped con ID {id_huesped} modificado exitosamente."
+        graph.run(query_modificar, id_huesped=id_huesped)
+        print(f"Huésped con ID {id_huesped} modificado exitosamente.")
+    
     except Exception as e:
-        return f"Error al modificar el huésped: {e}"
+        print(f"Error al modificar el huésped: {e}")
+
 
 ## Consultas 
 def ver_detalles_huesped():

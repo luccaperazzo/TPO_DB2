@@ -142,7 +142,7 @@ def modificar_hotel(id_hotel, nombre=None, direccion=None, telefono=None, email=
         return f"Error al modificar el hotel: {e}"
     
 
-def listar_hoteles():
+def listar_hoteles_2():
     try:
         query = "MATCH (h:Hotel) RETURN h.id_hotel, h.nombre ORDER BY h.nombre"
         result = graph.run(query)

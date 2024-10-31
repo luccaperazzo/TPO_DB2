@@ -4,6 +4,8 @@ from funciones_gestion import *
 from crear_entidades import *
 from funciones_gestion import *
 from funciones_amenity import *
+from funciones_habitacion import *
+
 
 graph = Graph("bolt://neo4j:12345678@localhost:7687")
 client = MongoClient('mongodb://localhost:27017/')
@@ -71,7 +73,7 @@ def gestionar_entidad():
             if entidad == '1':  # Hotel
                 intentos = 0
                 while intentos < 2 :
-                    id_hotel = listar_hoteles()
+                    id_hotel = listar_hoteles_2()
                     if not id_hotel:
                         print("ID inválido o no encontrado. Intente nuevamente.")
                         intentos += 1
@@ -127,7 +129,7 @@ def gestionar_entidad():
             if entidad == '1':  # Hotel
                 intentos = 0
                 while intentos < 2:
-                    id_hotel = listar_hoteles()
+                    id_hotel = listar_hoteles_2()
                     if not id_hotel:
                         print("ID inválido o no encontrado. Intente nuevamente.")
                         intentos += 1

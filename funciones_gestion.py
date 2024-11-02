@@ -178,7 +178,7 @@ def pois_cerca_de_hotel():
 # Función para obtener habitaciones disponibles en un hotel para un rango de fechas
 def habitaciones_disponibles_en_hotel(id_hotel, fecha_inicio, fecha_fin):
     # Convertir fechas a objetos datetime
-    mostrar_hoteles()
+    #mostrar_hoteles()
     fecha_inicio = datetime.strptime(fecha_inicio, "%Y-%m-%d")
     fecha_fin = datetime.strptime(fecha_fin, "%Y-%m-%d")
 

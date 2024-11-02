@@ -5,10 +5,10 @@ from crear_entidades import *
 from funciones_gestion import *
 from funciones_amenity import *
 from funciones_habitacion import *
-<<<<<<< HEAD
-=======
+#<<<<<<< HEAD
+#=======
 from funciones_huesped import *
->>>>>>> 28958271d669bd0bfe78e60cdc4537a5ff72e409
+#>>>>>>> 28958271d669bd0bfe78e60cdc4537a5ff72e409
 
 
 graph = Graph("bolt://neo4j:12345678@localhost:7687")
@@ -29,7 +29,7 @@ def gestionar_entidad():
         opcion = input("Ingrese el número de la operación (1-7): ")
 
         # Para todas las opciones menos consultas, se selecciona la entidad
-        if opcion in ['1', '2', '3']:
+        if opcion in ['1', '3']:
             print("Seleccione la entidad:")
             print("1. Hotel")
             print("2. Habitación")
@@ -38,6 +38,16 @@ def gestionar_entidad():
             print("5. Huésped")
             print("6. Reserva")
             entidad = input("Ingrese el número de la entidad (1-6): ")
+
+
+        if opcion in ['2']:
+            print("Seleccione la entidad:")
+            print("1. Hotel")
+            print("2. Habitación")
+            print("3. Amenity")
+            print("4. POI")
+            print("5. Huésped")
+            entidad = input("Ingrese el número de la entidad (1-5): ")
 
         if opcion == '1':  # Crear
             if entidad == '1':  # Hotel
@@ -88,7 +98,7 @@ def gestionar_entidad():
                     continue  # Volver al menú principal si falla después de 2 intentos
                 else:
                     
-                    modificar_hotel()
+                    modificar_hotel(id_hotel)
             
             elif entidad == '2':  # Habitación
                 modificar_habitacion()
@@ -120,7 +130,6 @@ def gestionar_entidad():
                 modificar_huesped()
 
         elif opcion == '3':  # Eliminar
-<<<<<<< HEAD
             if entidad == '1':  # Hotel
                 intentos = 0
                 while intentos < 2:
@@ -134,13 +143,11 @@ def gestionar_entidad():
                     print("Demasiados intentos fallidos. Volviendo al menú principal.")
                     continue  # Volver al menú principal si falla después de 2 intentos
                 if intentos <2:
-                    print(baja_hotel(id_hotel))
+                    baja_hotel(id_hotel)
             
-=======
-            if entidad == '1' :
-                baja_hotel()
+ #           if entidad == '1' :
+  #              baja_hotel()
                 
->>>>>>> 28958271d669bd0bfe78e60cdc4537a5ff72e409
             elif entidad == '2':  # Habitación
                 baja_habitacion()
             
@@ -148,7 +155,21 @@ def gestionar_entidad():
                 baja_amenity()
             
             elif entidad == '4':  # POI
-                baja_poi()
+
+                intentos = 0
+                while intentos < 2 :
+                    id_poi = listar_pois()
+                    if not id_poi:
+                        print("ID inválido o no encontrado. Intente nuevamente.")
+                        intentos += 1
+                    else:
+                        break
+                if intentos == 2:
+                    print("Demasiados intentos fallidos. Volviendo al menú principal.")
+                    continue  # Volver al menú principal si falla después de 2 intentos
+
+                if intentos <2:
+                    baja_poi( id_poi)
 
             elif entidad == '6': #Reserva
                 resultado = baja_reserva()

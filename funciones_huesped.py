@@ -47,7 +47,7 @@ def alta_huesped(nombre, apellido, direccion, telefono, email):
 
         # Crear el nuevo huésped con el nuevo ID
         graph.create(Node("Huesped", id_huesped=str(nuevo_id), nombre=nombre, apellido=apellido, direccion=direccion, telefono=telefono, email=email))
-        return f"Huésped creado exitosamente con ID: {nuevo_id}"
+        print( f"Huésped creado exitosamente con ID: {nuevo_id}")
 
     except Exception as e:
         return f"Error al crear el huésped: {e}"

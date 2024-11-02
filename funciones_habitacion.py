@@ -35,7 +35,7 @@ def alta_habitacion():
         id_habitacion = f"{nombre_hotel}_{nuevo_id}"
 
         # Paso 3: Ingresar tipo de habitación
-        tipo_habitacion = input("Ingrese el tipo de habitación (ej. 'Suite', 'Doble', 'Individual'): ")
+        tipo_habitacion = input("Ingrese el tipo de habitación (ej. 'Suite', 'Doble', 'Simple'): ")
 
         # Crear la habitación y relacionarla con el hotel
         query = """

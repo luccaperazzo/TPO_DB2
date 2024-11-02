@@ -51,23 +51,23 @@ def alta_poi(nombre, detalle, direccion, tipo):
 
         graph.run(subquery, id_poi=id_poi)
 
-        return f"POI '{nombre}' creado exitosamente."
+        print(f"POI '{nombre}' creado exitosamente.")
     except Exception as e:
         return f"Error al crear el POI: {e}"
     
-def baja_poi():
+def baja_poi(id_poi):
 
-    id_poi = input("Ingrese el ID del POI que desea eliminar: ")
-    try:
-        # Verificar si el POI existe
-        check_query = """
-            MATCH (poi:POI {id_poi: $id_poi})
-            RETURN COUNT(poi) > 0 AS exists
-        """
-        exists_result = graph.run(check_query, id_poi=int(id_poi)).data()
+    #id_poi = input("Ingrese el ID del POI que desea eliminar: ")
+    #try:
+     #   # Verificar si el POI existe
+      #  check_query = """
+       #     MATCH (poi:POI {id_poi: $id_poi})
+        #    RETURN COUNT(poi) > 0 AS exists
+       # """
+        #exists_result = graph.run(check_query, id_poi=int(id_poi)).data()
         
-        if not exists_result or not exists_result[0]['exists']:
-            print(f"No se encontró un POI con ID {id_poi}.")
+       # if not exists_result or not exists_result[0]['exists']:
+        #    print(f"No se encontró un POI con ID {id_poi}.")
 
         # Si el POI existe, proceder a eliminarlo
         query = """
@@ -76,8 +76,8 @@ def baja_poi():
         """
         graph.run(query, id_poi=int(id_poi))
         print(f"POI con ID {id_poi} eliminado exitosamente.")
-    except Exception as e:
-        return print(f"Error al eliminar el POI: {e}")
+       # except Exception as e:
+    #    return print(f"Error al eliminar el POI: {e}")
 
 
     
@@ -121,7 +121,7 @@ def modificar_poi(id_poi, nombre=None, detalle=None, direccion=None, tipo=None):
             """
             graph.run(create_query, id_poi=id_poi)
 
-        return f"POI con ID {id_poi} modificado exitosamente."
+        print( f"POI con ID {id_poi} modificado exitosamente.")
     except Exception as e:
         return f"Error al modificar el POI: {e}"
     

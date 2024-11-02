@@ -165,7 +165,7 @@ def listar_hoteles_con_validacion():
         print(f"Error al listar los hoteles: {e}")
         return None
 
-""""
+
 def mostrar_hoteles():
     try:
         # Consulta para obtener ID y nombre de todos los hoteles
@@ -190,4 +190,3 @@ def mostrar_hoteles():
     except Exception as e:
         print(f"Error al mostrar los hoteles: {e}")
         return []
-"""

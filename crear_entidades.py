@@ -181,5 +181,3 @@ def crear_reservas():
     for reserva in reservas:
         print(f"Reserva creada: {reserva}")
 
-# Llamar a la función para crear las reservas
-crear_reservas()

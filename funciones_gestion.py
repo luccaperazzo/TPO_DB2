@@ -82,37 +82,18 @@ def hoteles_cerca_de_poi():
 
 # 4. Información de un hotel
 def informacion_hotel():
-    # Consulta para obtener todos los hoteles disponibles
-    query_hoteles = """
-    MATCH (hotel:Hotel)
-    RETURN hotel.nombre AS nombre, hotel.direccion AS direccion
-    """
-    hoteles_result = graph.run(query_hoteles)
+    id_hotel = listar_hoteles_con_validacion()
 
-    # Listar los hoteles disponibles
-    print("Lista de hoteles disponibles:")
-    hoteles_disponibles = []
-    for record in hoteles_result:
-        hotel_nombre = record['nombre']
-        hotel_direccion = record['direccion']
-        hoteles_disponibles.append(hotel_nombre)
-        print(f"Hotel: {hotel_nombre}, Dirección: {hotel_direccion}")
-    
-    # Solicitar al usuario que elija un hotel
-    hotel_nombre = input("Ingrese el nombre de un hotel para ver sus detalles: ")
-    
-    if hotel_nombre not in hoteles_disponibles:
-        print("El hotel ingresado no está en la lista de hoteles disponibles.")
+    if not id_hotel:
         return
-    
     # Consulta para obtener la información detallada del hotel seleccionado
     query = """
-    MATCH (hotel:Hotel {nombre: $hotel_nombre})
+    MATCH (hotel:Hotel {id_hotel: $id_hotel})
     RETURN hotel.nombre AS nombre, hotel.direccion AS direccion, 
            hotel.telefono AS telefono, hotel.email AS email, 
            hotel.coordenadas AS coordenadas
     """
-    result = graph.run(query, parameters={"hotel_nombre": hotel_nombre})
+    result = graph.run(query, parameters={"id_hotel": id_hotel})
 
     # Mostrar la información detallada del hotel
     for record in result:
@@ -123,11 +104,9 @@ def informacion_hotel():
         hotel_coordenadas = record['coordenadas']
 
         print("-----------------------------------------------------")
-        print(f"Detalles del hotel:\nNombre: {hotel_nombre}\nDirección: {hotel_direccion}")
+        print(f"Detalles del hotel\nNombre: {hotel_nombre}\nDirección: {hotel_direccion}")
         print(f"Teléfono: {hotel_telefono}\nEmail: {hotel_email}\nCoordenadas: {hotel_coordenadas}")
         print("-----------------------------------------------------")
-
-
 
 
 # 5. POIs cerca de un hotel
@@ -261,19 +240,10 @@ from datetime import datetime
 
 def reservas_por_fecha_en_hotel(fecha_inicio, fecha_fin):
     try:
-        # Mostrar lista de hoteles disponibles en Neo4j
-        query_hoteles = """
-        MATCH (hotel:Hotel)
-        RETURN hotel.id_hotel AS id_hotel, hotel.nombre AS nombre
-        """
-        hoteles = graph.run(query_hoteles).data()
+        hotel_id = listar_hoteles_con_validacion()
 
-        print("Lista de hoteles disponibles:")
-        for hotel in hoteles:
-            print(f"Hotel ID: {hotel['id_hotel']}, Nombre: {hotel['nombre']}")
-
-        # Solicitar al usuario que elija un hotel
-        hotel_id = input("Ingrese el ID de un hotel para ver sus reservas: ")
+        if not hotel_id:
+            return
 
         # Convertir fechas a formato de MongoDB
         fecha_inicio_obj = datetime.strptime(fecha_inicio, "%Y-%m-%d")
@@ -298,7 +268,7 @@ def reservas_por_fecha_en_hotel(fecha_inicio, fecha_fin):
             resultado_hotel = graph.run(query_hotel_habitacion, id_habitacion=id_habitacion).data()
 
             # Verificar si el hotel coincide con el seleccionado
-            if resultado_hotel and resultado_hotel[0]["id_hotel"] == hotel_id:
+            if resultado_hotel and resultado_hotel[0].get("id_hotel") == hotel_id:
                 reservas_filtradas.append(reserva)
 
         # Mostrar las reservas del hotel seleccionado en el rango de fechas

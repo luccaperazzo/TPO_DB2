@@ -150,10 +150,9 @@ def crear_habitaciones():
 
 
 def crear_reservas():
-    # Lista de huéspedes, habitaciones, y fechas base
+    # Lista de huéspedes y habitaciones
     huespedes = [1, 2, 3, 4, 5]  # IDs de los huéspedes generados previamente
-    habitaciones = ["Hotel_1_1", "Hotel_1_2", "Hotel_2_1", "Hotel_2_3", "Hotel_3_1"]  # IDs de habitaciones creadas
-    hoteles_disponibles = ["Hotel_1", "Hotel_2", "Hotel_3"]  # IDs de hoteles disponibles
+    habitaciones = ["Hotel_Palermo_1", "Hotel_Recoleta_1", "Hotel_Obelisco_1", "Hotel_San_Telmo_1", "Hotel_3_1"]  # IDs de habitaciones creadas
     reservas = []
 
     # Rango de fechas base para las reservas
@@ -174,12 +173,12 @@ def crear_reservas():
             "fecha_salida": fecha_salida.strftime("%Y-%m-%d"),
             "precio": precio
         }
-        reservas_collection.insert_one(reserva)
-        reservas.append(reserva)
+        
+        # Manejo de excepciones al insertar en la base de datos
+        try:
+            reservas_collection.insert_one(reserva)
+            reservas.append(reserva)
+            print(f"Reserva creada: {reserva}")
+        except Exception as e:
+            print(f"Error al crear la reserva: {e}")
 
-    # Mostrar reservas creadas
-    for reserva in reservas:
-        print(f"Reserva creada: {reserva}")
-
-# Llamar a la función para crear las reservas
-#crear_reservas()

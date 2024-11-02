@@ -41,7 +41,7 @@ def mostrar_amenitys():
                 print(f"ID: {id_amenity}, Nombre: {nombre}")
         else:
             print("No hay amenidades disponibles en la base de datos.")
-
+        return result
     except Exception as e:
         print(f"Error al obtener las amenidades: {e}")
 

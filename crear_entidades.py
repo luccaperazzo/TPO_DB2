@@ -3,6 +3,7 @@ from funciones_huesped import *
 from funciones_hotel import *
 from funciones_poi import *
 from funciones_amenity import *
+from datetime import datetime, timedelta
 import random
 
 
@@ -145,3 +146,40 @@ def crear_habitaciones():
 
     except Exception as e:
         print(f"Error al crear las habitaciones: {e}")
+
+
+
+def crear_reservas():
+    # Lista de huéspedes, habitaciones, y fechas base
+    huespedes = [1, 2, 3, 4, 5]  # IDs de los huéspedes generados previamente
+    habitaciones = ["Hotel_1_1", "Hotel_1_2", "Hotel_2_1", "Hotel_2_3", "Hotel_3_1"]  # IDs de habitaciones creadas
+    hoteles_disponibles = ["Hotel_1", "Hotel_2", "Hotel_3"]  # IDs de hoteles disponibles
+    reservas = []
+
+    # Rango de fechas base para las reservas
+    fecha_inicio_base = datetime(2024, 11, 5)
+
+    for _ in range(10):  # Crear 10 reservas
+        huesped = random.choice(huespedes)
+        habitacion = random.choice(habitaciones)
+        fecha_entrada = fecha_inicio_base + timedelta(days=random.randint(0, 10))
+        fecha_salida = fecha_entrada + timedelta(days=random.randint(1, 5))
+        precio = random.randint(100, 500) * (fecha_salida - fecha_entrada).days
+
+        # Crear una reserva en MongoDB
+        reserva = {
+            "id_huesped": huesped,
+            "id_habitacion": habitacion,
+            "fecha_entrada": fecha_entrada.strftime("%Y-%m-%d"),
+            "fecha_salida": fecha_salida.strftime("%Y-%m-%d"),
+            "precio": precio
+        }
+        reservas_collection.insert_one(reserva)
+        reservas.append(reserva)
+
+    # Mostrar reservas creadas
+    for reserva in reservas:
+        print(f"Reserva creada: {reserva}")
+
+# Llamar a la función para crear las reservas
+crear_reservas()

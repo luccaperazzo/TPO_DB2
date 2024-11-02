@@ -33,30 +33,31 @@ def verificar_habitacion_en_hotel(id_habitacion):
 
 # 3. Hoteles cerca de un POI
 def hoteles_cerca_de_poi():
-    # Consulta para obtener todos los POIs disponibles
+    # Consulta para obtener todos los POIs con al menos un hotel cercano y el conteo de hoteles cercanos
     query_pois = """
-    MATCH (poi:POI)
-    RETURN poi.nombre AS nombre, poi.detalle AS detalle
+    MATCH (poi:POI)<-[:CERCA_DE]-(hotel:Hotel)
+    RETURN poi.nombre AS poi_nombre, poi.detalle AS poi_detalle, COUNT(hotel) AS cantidad_hoteles
     """
-    pois_result = graph.run(query_pois)
+    pois_result = graph.run(query_pois).data()
 
-    # Listar los POIs disponibles
-    print("Lista de POIs disponibles:")
+    # Listar los POIs disponibles y su cantidad de hoteles cercanos
+    print("Lista de POIs disponibles con hoteles cercanos:")
     pois_disponibles = []
     for record in pois_result:
-        poi_nombre = record['nombre']
-        poi_detalle = record['detalle']
+        poi_nombre = record['poi_nombre']
+        poi_detalle = record['poi_detalle']
+        cantidad_hoteles = record['cantidad_hoteles']
         pois_disponibles.append(poi_nombre)
-        print(f"POI: {poi_nombre}, Detalle: {poi_detalle}")
-    
+        print(f"POI: {poi_nombre}, Detalle: {poi_detalle} --> Hoteles cercanos: {cantidad_hoteles}")
+
     # Solicitar al usuario que elija un POI
-    poi_nombre = input("Ingrese el nombre de un POI para ver los hoteles cercanos: ")
-    
+    poi_nombre = input("\nIngrese el nombre de un POI para ver los hoteles cercanos: ")
+
     if poi_nombre not in pois_disponibles:
         print("El POI ingresado no está en la lista de POIs disponibles.")
         return
-    
-    # Consulta para obtener hoteles cercanos al POI seleccionado
+
+    # Consulta para obtener detalles de hoteles cercanos al POI seleccionado
     query_hoteles = """
     MATCH (poi:POI {nombre: $poi_nombre})<-[:CERCA_DE]-(hotel:Hotel)
     RETURN hotel.nombre AS nombre, hotel.direccion AS direccion
@@ -69,8 +70,9 @@ def hoteles_cerca_de_poi():
         hotel_nombre = record['nombre']
         hotel_direccion = record['direccion']
         hoteles_cercanos.append((hotel_nombre, hotel_direccion))
-    
+
     if hoteles_cercanos:
+        print(f"\nHoteles cercanos al POI '{poi_nombre}':")
         for hotel in hoteles_cercanos:
             print("-----------------------------------------------------")
             print(f"Hotel: {hotel[0]}\nDirección: {hotel[1]}")
@@ -78,7 +80,6 @@ def hoteles_cerca_de_poi():
     else:
         print("No se encontraron hoteles cercanos a ese POI.")
 
-        
 # 4. Información de un hotel
 def informacion_hotel():
     # Consulta para obtener todos los hoteles disponibles
@@ -131,37 +132,38 @@ def informacion_hotel():
 
 # 5. POIs cerca de un hotel
 def pois_cerca_de_hotel():
-    # Consulta para obtener todos los hoteles disponibles
+    # Consulta para obtener todos los hoteles con al menos un POI cercano y el conteo de POIs
     query_hoteles = """
-    MATCH (hotel:Hotel)
-    RETURN hotel.nombre AS nombre, hotel.direccion AS direccion
+    MATCH (hotel:Hotel)-[:CERCA_DE]->(poi:POI)
+    RETURN hotel.nombre AS hotel_nombre, hotel.direccion AS hotel_direccion, COUNT(poi) AS cantidad_pois
     """
-    hoteles_result = graph.run(query_hoteles)
+    hoteles_result = graph.run(query_hoteles).data()
 
-    # Listar los hoteles disponibles
-    print("Lista de hoteles disponibles:")
+    # Listar los hoteles disponibles con POIs cercanos y la cantidad de POIs
+    print("Lista de hoteles con POIs cercanos:")
     hoteles_disponibles = []
     for record in hoteles_result:
-        hotel_nombre = record['nombre']
-        hotel_direccion = record['direccion']
+        hotel_nombre = record['hotel_nombre']
+        hotel_direccion = record['hotel_direccion']
+        cantidad_pois = record['cantidad_pois']
         hoteles_disponibles.append(hotel_nombre)
-        print(f"Hotel: {hotel_nombre}, Dirección: {hotel_direccion}")
-    
+        print(f"Hotel: {hotel_nombre}, Dirección: {hotel_direccion}, POIs cercanos: {cantidad_pois}")
+
     # Solicitar al usuario que elija un hotel
-    hotel_nombre = input("Ingrese el nombre de un hotel para ver los POIs cercanos: ")
-    
+    hotel_nombre = input("\nIngrese el nombre de un hotel para ver los POIs cercanos: ")
+
     if hotel_nombre not in hoteles_disponibles:
         print("El hotel ingresado no está en la lista de hoteles disponibles.")
         return
-    
-    # Consulta para obtener los POIs cercanos al hotel seleccionado
-    query = """
+
+    # Consulta para obtener los detalles de los POIs cercanos al hotel seleccionado
+    query_pois = """
     MATCH (hotel:Hotel {nombre: $hotel_nombre})-[:CERCA_DE]->(poi:POI)
     RETURN poi.nombre AS nombre, poi.detalle AS detalle, poi.tipo AS tipo
     """
-    result = graph.run(query, parameters={"hotel_nombre": hotel_nombre})
+    result = graph.run(query_pois, parameters={"hotel_nombre": hotel_nombre})
 
-    # Mostrar la información de los POIs cercanos
+    # Mostrar la información de los POIs cercanos al hotel seleccionado
     print(f"\nPOIs cercanos al hotel '{hotel_nombre}':")
     for record in result:
         poi_nombre = record['nombre']

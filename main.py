@@ -142,7 +142,6 @@ def gestionar_entidad():
             elif consulta == '3':
                 pois_cerca_de_hotel()
             elif consulta == '4':  # Habitaciones disponibles
-                    mostrar_hoteles()
                     id_hotel = input("Ingrese el id del hotel : ")
                     fecha_entrada = input("Ingrese la fecha de entrada (YYYY-MM-DD): ")
                     fecha_salida = input("Ingrese la fecha de salida (YYYY-MM-DD): ")
@@ -168,7 +167,7 @@ def gestionar_entidad():
             crear_pois()
             crear_amenitys()
             crear_habitaciones()
-
+            crear_reservas()
         elif opcion == '7':  # Salir
             print("Salir del sistema") 
             break

@@ -8,17 +8,9 @@ graph = Graph("bolt://neo4j:12345678@localhost:7687")
 
 def alta_habitacion():
     try:
-        # Paso 1 y 2: Mostrar lista de hoteles y seleccionar hotel
-        hoteles = mostrar_hoteles()
-        if not hoteles:
-            print("No hay hoteles disponibles para asignar una habitación.")
-            return
-        
-        id_hotel = input("Ingrese el ID del hotel para asignar la habitación: ")
-        hotel_seleccionado = next((hotel for hotel in hoteles if hotel["id"] == id_hotel), None)
-        
-        if not hotel_seleccionado:
-            print("ID de hotel no válido. Por favor, seleccione un hotel de la lista.")
+        # Paso 1: Mostrar lista de hoteles y seleccionar hotel
+        id_hotel = listar_hoteles_con_validacion()
+        if not id_hotel:
             return
 
         # Paso 2: Obtener el máximo ID de habitación asociado al hotel seleccionado y generar uno nuevo
@@ -31,7 +23,14 @@ def alta_habitacion():
         nuevo_id = max_id + 1
 
         # Generar nombre para la habitación basado en el hotel
-        nombre_hotel = hotel_seleccionado["nombre"].replace(" ", "_")
+        query_nombre= """
+            MATCH (h:Hotel {id_hotel: $id_hotel})
+            RETURN h.nombre AS nombre
+        """
+        nombre_hotel = graph.run(query_nombre, id_hotel=id_hotel).data()[0]["nombre"].replace(" ", "_")
+
+        print(nombre_hotel)
+        #nombre_hotel = id_hotel["nombre"].replace(" ", "_")
         id_habitacion = f"{nombre_hotel}_{nuevo_id}"
 
         # Paso 3: Ingresar tipo de habitación
@@ -43,7 +42,7 @@ def alta_habitacion():
             CREATE (h)-[:TIENE]->(:Habitacion {id_habitacion: $id_habitacion, tipo_habitacion: $tipo_habitacion})
         """
         graph.run(query, id_hotel=id_hotel, id_habitacion=id_habitacion, tipo_habitacion=tipo_habitacion)
-        print(f"Habitación '{id_habitacion}' de tipo '{tipo_habitacion}' creada exitosamente en el hotel '{hotel_seleccionado['nombre']}'.")
+        print(f"Habitación '{id_habitacion}' de tipo '{tipo_habitacion}' creada exitosamente en el hotel '{nombre_hotel}'.")
 
         # Paso 4: Mostrar amenities disponibles y permitir la selección
         amenitys = mostrar_amenitys()
@@ -92,7 +91,7 @@ def alta_habitacion():
    
 def baja_habitacion():
     try:
-        # Paso 1: Mostrar lista de hoteles
+        # Paso 1 y 2: Mostrar lista de hoteles y seleccionar hotel
         id_hotel = listar_hoteles_con_validacion()
         if not id_hotel:
             return
@@ -277,19 +276,11 @@ def modificar_habitacion():
 def mostrar_amenities_habitacion():
     try:
         # Paso 1: Mostrar lista de hoteles
-        hoteles = mostrar_hoteles()
-        if not hoteles:
+        id_hotel = listar_hoteles_con_validacion()
+        if not id_hotel:
             print("No hay hoteles disponibles.")
             return
-
-        # Paso 2: Seleccionar un hotel
-        id_hotel = input("Ingrese el ID del hotel para ver los amenities de sus habitaciones: ")
-        hotel_seleccionado = next((hotel for hotel in hoteles if hotel["id"] == id_hotel), None)
-
-        if not hotel_seleccionado:
-            print("ID de hotel no válido. Por favor, seleccione un hotel de la lista.")
-            return
-
+        
         # Paso 3: Mostrar habitaciones del hotel seleccionado
         query_habitaciones = """
             MATCH (h:Hotel {id_hotel: $id_hotel})-[:TIENE]->(hab:Habitacion)

@@ -402,18 +402,10 @@ def listar_hoteles():
     
 def crear_reserva():
     try:
-        # Mostrar lista de hoteles disponibles
-        query_hoteles = """
-        MATCH (hotel:Hotel)
-        RETURN hotel.id_hotel AS id_hotel, hotel.nombre AS nombre
-        """
-        hoteles = graph.run(query_hoteles).data()
+        id_hotel = listar_hoteles_con_validacion()
 
-        print("Hoteles disponibles:")
-        for hotel in hoteles:
-            print(f"ID: {hotel['id_hotel']}, Nombre: {hotel['nombre']}")
-
-        id_hotel = input("Ingrese el ID del hotel donde desea hacer la reserva: ")
+        if not id_hotel:
+            return
 
         # Solicitar fechas de entrada y salida
         fecha_entrada = input("Ingrese la fecha de entrada (YYYY-MM-DD): ")

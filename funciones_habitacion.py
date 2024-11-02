@@ -8,7 +8,7 @@ graph = Graph("bolt://neo4j:12345678@localhost:7687")
 
 def alta_habitacion():
     try:
-        # Paso 1: Seleccionar hotel
+        # Paso 1 y 2: Mostrar lista de hoteles y seleccionar hotel
         hoteles = mostrar_hoteles()
         if not hoteles:
             print("No hay hoteles disponibles para asignar una habitación.")
@@ -93,17 +93,8 @@ def alta_habitacion():
 def baja_habitacion():
     try:
         # Paso 1: Mostrar lista de hoteles
-        hoteles = mostrar_hoteles()
-        if not hoteles:
-            print("No hay hoteles disponibles.")
-            return
-
-        # Paso 2: Seleccionar un hotel
-        id_hotel = input("Ingrese el ID del hotel para eliminar habitaciones: ")
-        hotel_seleccionado = next((hotel for hotel in hoteles if hotel["id"] == id_hotel), None)
-
-        if not hotel_seleccionado:
-            print("ID de hotel no válido. Por favor, seleccione un hotel de la lista.")
+        id_hotel = listar_hoteles_con_validacion()
+        if not id_hotel:
             return
 
         # Paso 3: Mostrar habitaciones del hotel seleccionado
@@ -172,19 +163,10 @@ def baja_habitacion():
     
 def modificar_habitacion():
     try:
-        # Paso 1: Mostrar lista de hoteles
-        hoteles = mostrar_hoteles()
-        if not hoteles:
-            print("No hay hoteles disponibles.")
-            return
-
-        # Paso 2: Seleccionar un hotel
-        id_hotel = input("Ingrese el ID del hotel para modificar habitaciones: ")
-        hotel_seleccionado = next((hotel for hotel in hoteles if hotel["id"] == id_hotel), None)
-        
-        if not hotel_seleccionado:
-            print("ID de hotel no válido. Por favor, seleccione un hotel de la lista.")
-            return
+        # Paso 1: Mostrar lista de hoteles y seleccionar hotel
+        id_hotel = listar_hoteles_con_validacion()
+        if not id_hotel:
+            return        
 
         # Paso 3: Mostrar habitaciones del hotel seleccionado
         query_habitaciones = """

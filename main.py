@@ -71,21 +71,8 @@ def gestionar_entidad():
         
         elif opcion == '2':  # Modificar
 
-            if entidad == '1':  # Hotel
-                intentos = 0
-                while intentos < 2 :
-                    id_hotel = listar_hoteles()
-                    if not id_hotel:
-                        print("ID inválido o no encontrado. Intente nuevamente.")
-                        intentos += 1
-                    else:
-                        break
-                if intentos == 2:
-                    print("Demasiados intentos fallidos. Volviendo al menú principal.")
-                    continue  # Volver al menú principal si falla después de 2 intentos
-                else:
-                    
-                    modificar_hotel()
+            if entidad == '1':  # Hotel              
+                modificar_hotel()
             
             elif entidad == '2':  # Habitación
                 modificar_habitacion()

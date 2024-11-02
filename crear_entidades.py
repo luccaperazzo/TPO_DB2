@@ -152,7 +152,7 @@ def crear_habitaciones():
 def crear_reservas():
     # Lista de huéspedes y habitaciones
     huespedes = [1, 2, 3, 4, 5]  # IDs de los huéspedes generados previamente
-    habitaciones = ["Hotel_Palermo_1", "Hotel_Recoleta_1", "Hotel_Obelisco_1", "Hotel_San_Telmo_1", "Hotel_3_1"]  # IDs de habitaciones creadas
+    habitaciones = ["Hotel_Palermo_1", "Hotel_Recoleta_1", "Hotel_Obelisco_1", "Hotel_San_Telmo_1", "Hotel_Puerto_Madero_1"]  # IDs de habitaciones creadas
     reservas = []
 
     # Rango de fechas base para las reservas

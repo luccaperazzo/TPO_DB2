@@ -114,7 +114,7 @@ def crear_habitaciones():
             id_hotel = hotel["id"]
             nombre_hotel = hotel["nombre"].replace(" ", "_")
 
-            for i in range(5):  # Crear 5 habitaciones por hotel
+            for i in range(2):  # Crear 5 habitaciones por hotel
                 # Generar un nuevo ID de habitación
                 nuevo_id = i + 1
                 id_habitacion = f"{nombre_hotel}_{nuevo_id}"
@@ -181,3 +181,8 @@ def crear_reservas():
     for reserva in reservas:
         print(f"Reserva creada: {reserva}")
 
+<<<<<<< HEAD
+=======
+# Llamar a la función para crear las reservas
+#crear_reservas()
+>>>>>>> fc06c0eb2ac332ee2528d8ca48e3bebf7665f920

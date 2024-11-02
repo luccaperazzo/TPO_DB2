@@ -135,10 +135,14 @@ def ver_detalles_huesped():
 def reservas_por_huesped():
     # Listar todos los huéspedes
     print("Lista de huéspedes disponibles:")
-    get_huespedes()  # Asegúrate de que esta función imprima los huéspedes y sus IDs
+    get_huespedes()  # Verifica que esta función imprima los huéspedes y sus IDs
 
     # Solicitar al usuario que ingrese el ID del huésped
-    id_huesped = input("Introduce el ID del huésped para ver sus reservas: ")
+    try:
+        id_huesped = int(input("Introduce el ID del huésped para ver sus reservas: "))  # Convertir a entero si es necesario
+    except ValueError:
+        print("El ID de huésped debe ser un número.")
+        return
 
     # Consultar reservas para el huésped específico
     reservas = list(reservas_collection.find({"id_huesped": id_huesped}))
@@ -150,6 +154,7 @@ def reservas_por_huesped():
             print("-----------------------------------------------------")
     else:
         print("No se encontraron reservas para este huésped.")
+
 
 
 def get_huespedes():

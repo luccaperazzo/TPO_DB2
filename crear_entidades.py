@@ -4,7 +4,6 @@ from funciones_hotel import *
 from funciones_poi import *
 from funciones_amenity import *
 from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
 import random
 
 
@@ -172,7 +171,7 @@ def crear_reservas():
         huesped = random.choice(huespedes)
         
         # Selecciona una habitación base y altera el último dígito
-        habitacion_base = random.choice(habitaciones_base)
+        habitacion_base = random.choice(habitaciones)
         ultimo_digito = random.choice([1, 2])  # Genera aleatoriamente 1 o 2
         habitacion = f"{habitacion_base}_{ultimo_digito}"  # Crea el nombre de la habitación
         

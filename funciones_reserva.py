@@ -2,7 +2,6 @@ from py2neo import Graph, Node
 from funciones_gestion import *
 from pymongo import MongoClient
 from bson.objectid import ObjectId
-from funciones_gestion import habitaciones_disponibles1
 from funciones_habitacion import *
 from funciones_hotel import *
 

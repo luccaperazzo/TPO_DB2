@@ -317,3 +317,38 @@ def listar_habitaciones_con_validacion(id_hotel):
     except Exception as e:
         print(f"Error al listar los hoteles: {e}")
         return None
+    
+
+def habitaciones_disponibles1(fecha_inicio, fecha_fin):
+    # Convertir fechas a objetos datetime
+    fecha_inicio = datetime.strptime(fecha_inicio, "%Y-%m-%d")
+    fecha_fin = datetime.strptime(fecha_fin, "%Y-%m-%d")
+
+    # Buscar reservas que coincidan o se solapen con el rango de fechas
+    reservas = reservas_collection.find({
+       "$or":[
+            {"fecha_entrada": {"$gte": fecha_inicio, "$lte": fecha_fin}},
+            {"fecha_salida": {"$gte": fecha_inicio, "$lte": fecha_fin}},
+            {"$and":[
+                {"fecha_entrada": {"$lte": fecha_inicio}},
+                {"fecha_salida": {"$gte": fecha_fin}}
+             ]}
+        ]
+    })
+
+    # Extraer las habitaciones ocupadas de las reservas
+    habitaciones_ocupadas = {reserva["id_habitacion"] for reserva in reservas}
+    
+    # Consultar en Neo4j las habitaciones que no están ocupadas
+    query = """
+        MATCH (h:Habitacion) 
+        WHERE NOT h.id_habitacion IN $habitaciones_ocupadas
+        RETURN h.id_habitacion AS id_habitacion
+    """
+    
+    # Ejecutar la consulta y obtener las habitaciones disponibles
+    result = graph.run(query, habitaciones_ocupadas=list(habitaciones_ocupadas))
+    
+    # Devolver las habitaciones disponibles como una lista de diccionarios
+    return [record["id_habitacion"] for record in result]    
+ 

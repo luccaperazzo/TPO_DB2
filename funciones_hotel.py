@@ -190,3 +190,43 @@ def mostrar_hoteles():
     except Exception as e:
         print(f"Error al mostrar los hoteles: {e}")
         return []
+
+
+def habitaciones_disponibles_en_hotel(id_hotel, fecha_inicio, fecha_fin):
+    # Convertir fechas a objetos datetime
+    #mostrar_hoteles()
+    fecha_inicio = datetime.strptime(fecha_inicio, "%Y-%m-%d")
+    fecha_fin = datetime.strptime(fecha_fin, "%Y-%m-%d")
+
+    # Obtener reservas que interfieren con el rango de fechas solicitado
+    reservas = reservas_collection.find({
+        "$or": [
+            {"fecha_entrada": {"$gte": fecha_inicio.strftime("%Y-%m-%d"), "$lte": fecha_fin.strftime("%Y-%m-%d")}},
+            {"fecha_salida": {"$gte": fecha_inicio.strftime("%Y-%m-%d"), "$lte": fecha_fin.strftime("%Y-%m-%d")}},
+            {
+                "$and": [
+                    {"fecha_entrada": {"$lte": fecha_inicio.strftime("%Y-%m-%d")}},
+                    {"fecha_salida": {"$gte": fecha_fin.strftime("%Y-%m-%d")}}
+                ]
+            }
+        ]
+    })
+
+    # Obtener IDs de habitaciones ocupadas
+    habitaciones_ocupadas = {reserva["id_habitacion"] for reserva in reservas}
+
+    # Consultar habitaciones disponibles en el hotel seleccionado
+    query_habitaciones = """
+        MATCH (h:Hotel {id_hotel: $id_hotel})-[:TIENE]->(hab:Habitacion) 
+        WHERE NOT hab.id_habitacion IN $habitaciones_ocupadas
+        RETURN hab.id_habitacion AS habitacion
+    """
+    
+    # Ejecutar la consulta
+    result_habitaciones = graph.run(query_habitaciones, 
+                                     habitaciones_ocupadas=list(habitaciones_ocupadas), 
+                                     id_hotel=id_hotel)
+
+    # Devolver las habitaciones disponibles
+    return [record['habitacion'] for record in result_habitaciones]
+

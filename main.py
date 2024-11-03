@@ -6,7 +6,8 @@ from funciones_gestion import *
 from funciones_amenity import *
 from funciones_habitacion import *
 from funciones_huesped import *
-
+from funciones_reserva import *
+from funciones_hotel import *
 
 graph = Graph("bolt://neo4j:12345678@localhost:7687")
 client = MongoClient('mongodb://localhost:27017/')

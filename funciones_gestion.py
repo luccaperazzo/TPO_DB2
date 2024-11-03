@@ -13,7 +13,7 @@ client = MongoClient('mongodb://localhost:27017/')
 db = client['hotel_db']
 reservas_collection = db['reservas']
 
-def borrar_bd_reservas ():
+def borrar_bd_reservas1():
     resultado = reservas_collection.delete_many({})
     print(f"Documentos eliminados: {resultado.deleted_count}")
 

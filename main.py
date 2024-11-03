@@ -81,24 +81,7 @@ def gestionar_entidad():
                 modificar_amenity()
             
             elif entidad == '4':  # POI
-                intentos = 0
-                while intentos < 2 :
-                    id_poi = listar_pois()
-                    if not id_poi:
-                        print("ID inválido o no encontrado. Intente nuevamente.")
-                        intentos += 1
-                    else:
-                        break
-                if intentos == 2:
-                    print("Demasiados intentos fallidos. Volviendo al menú principal.")
-                    continue  # Volver al menú principal si falla después de 2 intentos
-                else:
-                    nombre = input("Ingrese el nuevo nombre del POI (o presione Enter para omitir): ")
-                    detalle = input("Ingrese el nuevo detalle del POI (o presione Enter para omitir): ")
-                    direccion = input("Ingrese la nueva direccion del POI (o presione Enter para omitir): ")
-                    tipo = input("Ingrese el nuevo tipo del POI (o presione Enter para omitir): ")
-                    modificar_poi(id_poi, nombre if nombre else None, detalle if detalle else None, 
-                                    direccion if direccion else None, tipo if tipo else None)
+                modificar_poi()
                 
             elif entidad == '5':  # Huésped
                 modificar_huesped()

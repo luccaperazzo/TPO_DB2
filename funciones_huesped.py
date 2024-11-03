@@ -54,18 +54,9 @@ def alta_huesped(nombre, apellido, direccion, telefono, email):
     
 def modificar_huesped():
     try:
-        get_huespedes()
-        # Pedir el ID del huésped por input
-        id_huesped = input("Ingrese el ID del huésped que desea modificar: ")
-        
-        # Verificar si el ID del huésped existe
-        query_verificar = "MATCH (h:Huesped {id_huesped: $id_huesped}) RETURN h"
-        resultado = graph.run(query_verificar, id_huesped=id_huesped).data()
-        
-        if not resultado:
-            print(f"Error: No se encontró ningún huésped con el ID {id_huesped}.")
+        id_huesped= listar_huespedes_con_validacion()
+        if not id_huesped:
             return
-        
         # Solicitar los campos a modificar
         nombre = input("Ingrese el nuevo nombre (deje vacío si no desea cambiarlo): ") or None
         apellido = input("Ingrese el nuevo apellido (deje vacío si no desea cambiarlo): ") or None
@@ -104,14 +95,9 @@ def modificar_huesped():
 ## Consultas 
 def ver_detalles_huesped():
     try:
-        # Mostrar la lista de huéspedes disponibles
-        print("Lista de huéspedes disponibles:")
-        get_huespedes()
-
-        # Solicitar el ID del huésped
-        id_huesped = input("Introduce el ID del huésped que deseas ver: ")
-
-        # Consulta para buscar el huésped por ID
+        id_huesped= listar_huespedes_con_validacion()
+        if not id_huesped:
+            return
         query = """
         MATCH (huesped:Huesped {id_huesped: $id_huesped})
         RETURN huesped
@@ -133,17 +119,9 @@ def ver_detalles_huesped():
 
 
 def reservas_por_huesped():
-    # Listar todos los huéspedes
-    print("Lista de huéspedes disponibles:")
-    get_huespedes()  # Verifica que esta función imprima los huéspedes y sus IDs
-
-    # Solicitar al usuario que ingrese el ID del huésped
-    try:
-        id_huesped = int(input("Introduce el ID del huésped para ver sus reservas: "))  # Convertir a entero si es necesario
-    except ValueError:
-        print("El ID de huésped debe ser un número.")
+    id_huesped= listar_huespedes_con_validacion()
+    if not id_huesped:
         return
-
     # Consultar reservas para el huésped específico
     reservas = list(reservas_collection.find({"id_huesped": id_huesped}))
 
@@ -157,24 +135,53 @@ def reservas_por_huesped():
 
 
 
-def get_huespedes():
-    try:
+#def get_huespedes():
+    #try:
         # Consulta para obtener los nombres y apellidos de todos los huéspedes
-        query = """
-        MATCH (h:Huesped)
-        RETURN h.nombre AS nombre, h.apellido AS apellido,h.id_huesped as id_huesped
-        """
-        result = graph.run(query).data()
+        #query = """
+        #MATCH (h:Huesped)
+        #RETURN h.nombre AS nombre, h.apellido AS apellido,h.id_huesped as id_huesped
+        #"""
+        #result = graph.run(query).data()
 
         # Mostrar los nombres y apellidos
-        if result:
-            for record in result:
-                nombre = record['nombre']
-                apellido = record['apellido']
-                id_huesped = record['id_huesped']
-                print(f"Nombre: {nombre}, Apellido: {apellido}, ID : {id_huesped}")
-        else:
-            print("No se encontraron huéspedes en la base de datos.")
+        #if result:
+        #    for record in result:
+       #         nombre = record['nombre']
+      #          apellido = record['apellido']
+     #           id_huesped = record['id_huesped']
+    #            print(f"Nombre: {nombre}, Apellido: {apellido}, ID : {id_huesped}")
+   #     else:
+  #          print("No se encontraron huéspedes en la base de datos.")
 
+ #   except Exception as e:
+#        print(f"Error al obtener los huéspedes: {e}")
+
+
+def listar_huespedes_con_validacion():
+    try:
+        query = "MATCH (h:Huesped) RETURN h.id_huesped, h.nombre ORDER BY h.nombre"
+        result = graph.run(query)
+        huespedes = result.data()  # Devuelve una lista de diccionarios con los huespedes
+        
+        if not huespedes:
+            print("No hay huespedes disponibles para modificar.")
+            return None
+        intentos= 0
+        while intentos<2:
+            print("Seleccione el huesped:")
+            for idx, huesped in enumerate(huespedes, start=1):
+                print(f"{idx}. {huesped['h.nombre']} ")
+        
+            seleccion = int(input("Ingrese el número del huesped que desea modificar: "))
+            if 1 <= seleccion <= len(huespedes):
+                return huespedes[seleccion - 1]['h.id_huesped']  # Retorna el id del huesped seleccionado
+            else:
+                print("Selección inválida.Intente nuevamente.")
+                intentos +=1
+        if intentos ==2:
+            print("Demasiados intentos fallidos. Volviendo al menú principal.")
+            return None
     except Exception as e:
-        print(f"Error al obtener los huéspedes: {e}")
+        print(f"Error al listar los huespedes: {e}")
+        return None

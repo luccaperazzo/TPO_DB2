@@ -180,9 +180,3 @@ def crear_reservas():
     # Mostrar reservas creadas
     for reserva in reservas:
         print(f"Reserva creada: {reserva}")
-
-<<<<<<< HEAD
-=======
-# Llamar a la función para crear las reservas
-#crear_reservas()
->>>>>>> fc06c0eb2ac332ee2528d8ca48e3bebf7665f920

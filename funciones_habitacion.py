@@ -4,6 +4,9 @@ from pymongo import MongoClient
 from funciones_hotel import *
 from funciones_amenity import *
 from datetime import datetime
+from funciones_hotel import *
+from funciones_hotel import listar_hoteles_con_validacion
+
 client = MongoClient('mongodb://localhost:27017/')
 db = client['hotel_db']
 reservas_collection = db['reservas']

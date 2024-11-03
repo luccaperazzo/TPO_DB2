@@ -67,6 +67,8 @@ def gestionar_entidad():
                 direccion = input("Ingrese la direccion del POI: ")
                 tipo = input("Ingrese el tipo del POI: ")
                 alta_poi(nombre, detalle, direccion, tipo)
+                mensaje = alta_poi(nombre, detalle, direccion, tipo)
+                print(mensaje)
                 
             elif entidad == '5':  # Huésped
                 nombre = input("Ingrese el nombre del huésped: ")

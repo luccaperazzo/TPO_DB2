@@ -42,7 +42,6 @@ def crear_pois():
         {"nombre": "Barrio Chino", "detalle": "Colorido barrio con tiendas y restaurantes chinos", "direccion": "Arribeños 2240", "tipo": "Barrio"},
         {"nombre": "Jardín Botánico", "detalle": "Jardín botánico con variedad de plantas y esculturas", "direccion": "Av. Santa Fe 3870", "tipo": "Parque"},
         {"nombre": "Planetario Galileo Galilei", "detalle": "Planetario con exhibiciones de astronomía", "direccion": "Sarmiento 3000", "tipo": "Ciencia"},
-        {"nombre": "Parque Centenario", "detalle": "Parque popular para eventos y ferias", "direccion": "Díaz Vélez 5000", "tipo": "Parque"},
         {"nombre": "La Bombonera", "detalle": "Estadio de fútbol del club Boca Juniors", "direccion": "Brandsen 805", "tipo": "Estadio"},
         {"nombre": "Palacio Barolo", "detalle": "Edificio histórico inspirado en la Divina Comedia", "direccion": "Av. de Mayo 1370", "tipo": "Arquitectura"},
         {"nombre": "Bosques de Palermo", "detalle": "Parque grande con lagos y áreas recreativas", "direccion": "Av. Infanta Isabel 1500", "tipo": "Parque"}
@@ -85,8 +84,7 @@ def crear_amenitys():
         "Bata de Baño",
         "Desayuno en Habitación",
         "Almohadas Adicionales",
-        "Wi-Fi Gratuito",
-        "Café y Té"
+        "Wi-Fi Gratuito"
     ]
 
     for nombre in amenitys:
@@ -129,8 +127,8 @@ def crear_habitaciones():
                 graph.run(query, id_hotel=id_hotel, id_habitacion=id_habitacion, tipo_habitacion=tipo_habitacion)
                 print(f"Habitación '{id_habitacion}' de tipo '{tipo_habitacion}' creada exitosamente en el hotel '{nombre_hotel}'.")
 
-                # Asignar entre 0 y 4 amenities a la habitación
-                num_amenities = random.randint(0, 4)  # Número aleatorio de amenities
+                # Asignar entre 0 y 2 amenities a la habitación
+                num_amenities = random.randint(0, 2)  # Número aleatorio de amenities
                 selected_amenities = random.sample(amenitys, num_amenities)  # Seleccionar amenities aleatorios
 
                 for amenity in selected_amenities:

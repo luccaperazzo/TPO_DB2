@@ -64,7 +64,7 @@ def alta_habitacion():
                 print("No se asignarán amenities a la habitación.")
                 return
 
-        print("Amenidades disponibles:")
+        print("Amenitys disponibles:")
         for idx, amenity in enumerate(amenitys, start=1):
             print(f"{idx}. {amenity['nombre']} ")
         
@@ -180,8 +180,12 @@ def modificar_habitacion():
             RETURN a.id_amenity AS id_amenity, a.nombre AS nombre
         """
         amenities_actuales = graph.run(query_amenities, id_habitacion=id_habitacion).data()
+        # Extraer los nombres de los amenities y unirlos en una sola línea
+        nombres_amenities = [amenity['nombre'] for amenity in amenities_actuales]
+        amenities_como_texto = ", ".join(nombres_amenities)
+
         print("Amenities actuales:")
-        traer_amenitys()
+        print(amenities_como_texto)
 
         # Paso 5: Modificar tipo de habitación o amenities
         modificar_tipo = input("¿Desea modificar el tipo de habitación? (s/n): ").lower()
@@ -207,7 +211,10 @@ def modificar_habitacion():
             if not amenitys_disponibles:
                 print("No hay amenities disponibles para asignar.")
                 return
-            
+
+            print("Amenitys disponibles:")
+            for idx, amenity in enumerate(amenitys_disponibles, start=1):
+                print(f"{idx}. {amenity['nombre']} ")
             # Aquí ahora no se imprimirá 'None' si no hay amenities
             ids_amenities_input = input("Ingrese los IDs de los amenities que desea asignar, separados por comas (o presione Enter para eliminar todos): ")
             if ids_amenities_input.strip():  # Si el usuario ingresó algo

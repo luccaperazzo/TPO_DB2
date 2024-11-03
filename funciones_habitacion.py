@@ -3,6 +3,10 @@ from funciones_gestion import *
 from pymongo import MongoClient
 from funciones_hotel import *
 from funciones_amenity import *
+from datetime import datetime
+client = MongoClient('mongodb://localhost:27017/')
+db = client['hotel_db']
+reservas_collection = db['reservas']
 
 graph = Graph("bolt://neo4j:12345678@localhost:7687")
 
@@ -29,7 +33,6 @@ def alta_habitacion():
         """
         nombre_hotel = graph.run(query_nombre, id_hotel=id_hotel).data()[0]["nombre"].replace(" ", "_")
 
-        print(nombre_hotel)
         #nombre_hotel = id_hotel["nombre"].replace(" ", "_")
         id_habitacion = f"{nombre_hotel}_{nuevo_id}"
 
@@ -45,7 +48,7 @@ def alta_habitacion():
         print(f"Habitación '{id_habitacion}' de tipo '{tipo_habitacion}' creada exitosamente en el hotel '{nombre_hotel}'.")
 
         # Paso 4: Mostrar amenities disponibles y permitir la selección
-        amenitys = mostrar_amenitys()
+        amenitys = traer_amenitys()
         if not amenitys:
             crear_nuevo = input("No hay amenities disponibles. ¿Desea crear uno nuevo? (s/n): ")
             if crear_nuevo.lower() == 's':
@@ -53,14 +56,14 @@ def alta_habitacion():
                 resultado = alta_amenity(nombre_amenity)
                 print(resultado)
                 # Volver a cargar los amenities después de crear uno nuevo
-                amenitys = mostrar_amenitys()
+                amenitys = traer_amenitys()
             else:
                 print("No se asignarán amenities a la habitación.")
                 return
 
         print("Amenidades disponibles:")
-        for amenity in amenitys:
-            print(f"ID: {amenity['id']}, Nombre: {amenity['nombre']}")
+        for idx, amenity in enumerate(amenitys, start=1):
+            print(f"{idx}. {amenity['nombre']} ")
         
         # Seleccionar amenities para la habitación
         ids_amenities = input("Ingrese los IDs de los amenities que desea asignar a la habitación, separados por comas (o presione Enter para omitir): ")
@@ -82,7 +85,7 @@ def alta_habitacion():
                 graph.run(query, id_habitacion=id_habitacion, id_amenity=id_amenity)
                 print(f"Amenity con ID {id_amenity} asignado a la habitación {id_habitacion} exitosamente.")
 
-        print(f"Creación completa de la habitación '{id_habitacion}' en el hotel '{hotel_seleccionado['nombre']}'.")
+        print(f"Creación completa de la habitación '{id_habitacion}' en el hotel '{id_hotel}'.")
 
     except Exception as e:
         print(f"Error al crear la habitación: {e}")
@@ -166,32 +169,19 @@ def modificar_habitacion():
         id_hotel = listar_hoteles_con_validacion()
         if not id_hotel:
             return        
-
-        # Paso 3: Mostrar habitaciones del hotel seleccionado
-        query_habitaciones = """
-            MATCH (h:Hotel {id_hotel: $id_hotel})-[:TIENE]->(hab:Habitacion)
-            RETURN hab.id_habitacion AS id_habitacion, hab.tipo_habitacion AS tipo_habitacion
-        """
-        habitaciones = graph.run(query_habitaciones, id_hotel=id_hotel).data()
-
-        if not habitaciones:
-            print("No hay habitaciones disponibles en el hotel seleccionado.")
-            return
-
-        print("Habitaciones disponibles:")
-        for hab in habitaciones:
-            print(f"ID: {hab['id_habitacion']}, Tipo: {hab['tipo_habitacion']}")
-
         # Paso 4: Seleccionar una habitación
-        id_habitacion = input("Ingrese el ID de la habitación que desea modificar: ")
-        habitacion_seleccionada = next((hab for hab in habitaciones if hab["id_habitacion"] == id_habitacion), None)
-
-        if not habitacion_seleccionada:
-            print("ID de habitación no válido. Por favor, seleccione una habitación de la lista.")
+        id_habitacion= listar_habitaciones_con_validacion(id_hotel)
+        if not id_habitacion:
             return
-
+        
+        query_habitacion = """
+        MATCH (h:Habitacion {id_habitacion: $id_habitacion})
+        RETURN h.tipo_habitacion AS tipo_habitacion, h.id_habitacion AS nombre
+        """
+        habitacion_actual = graph.run(query_habitacion, id_habitacion=id_habitacion).data()
+        
         # Obtener detalles actuales de la habitación
-        tipo_actual = habitacion_seleccionada["tipo_habitacion"]
+        tipo_actual = habitacion_actual [0]["tipo_habitacion"]
         print(f"Tipo actual de habitación: {tipo_actual}")
 
         # Obtener amenities actuales
@@ -200,7 +190,7 @@ def modificar_habitacion():
             RETURN a.id_amenity AS id_amenity, a.nombre AS nombre
         """
         amenities_actuales = graph.run(query_amenities, id_habitacion=id_habitacion).data()
-
+        
         print("Amenities actuales:")
         for amenity in amenities_actuales:
             print(f"ID: {amenity['id_amenity']}, Nombre: {amenity['nombre']}")
@@ -208,7 +198,7 @@ def modificar_habitacion():
         # Paso 5: Modificar tipo de habitación o amenities
         modificar_tipo = input("¿Desea modificar el tipo de habitación? (s/n): ").lower()
         if modificar_tipo == 's':
-            tipos_habitacion = ["Suite", "Doble", "Simple"]
+            tipos_habitacion = ["Suite", "Doble", "Individual"]
             print("Tipos de habitación disponibles:")
             for i, tipo in enumerate(tipos_habitacion, 1):
                 print(f"{i}. {tipo}")
@@ -225,7 +215,7 @@ def modificar_habitacion():
         modificar_amenities = input("¿Desea modificar los amenities? (s/n): ").lower()
         if modificar_amenities == 's':
             # Mostrar amenities disponibles
-            amenitys_disponibles = mostrar_amenitys()
+            amenitys_disponibles = traer_amenitys()
             if not amenitys_disponibles:
                 print("No hay amenities disponibles para asignar.")
                 return
@@ -271,8 +261,6 @@ def modificar_habitacion():
     except Exception as e:
         print(f"Error al modificar la habitación: {e}")
 
-
-
 def mostrar_amenities_habitacion():
     try:
         # Paso 1: Mostrar lista de hoteles
@@ -280,31 +268,9 @@ def mostrar_amenities_habitacion():
         if not id_hotel:
             print("No hay hoteles disponibles.")
             return
-        
-        # Paso 3: Mostrar habitaciones del hotel seleccionado
-        query_habitaciones = """
-            MATCH (h:Hotel {id_hotel: $id_hotel})-[:TIENE]->(hab:Habitacion)
-            RETURN hab.id_habitacion AS id_habitacion, hab.tipo_habitacion AS tipo_habitacion
-        """
-        habitaciones = graph.run(query_habitaciones, id_hotel=id_hotel).data()
-
-        if not habitaciones:
-            print("No hay habitaciones disponibles en el hotel seleccionado.")
-            return
-
-        print("Habitaciones disponibles:")
-        for hab in habitaciones:
-            print(f"ID: {hab['id_habitacion']}, Tipo: {hab['tipo_habitacion']}")
-
-        # Paso 4: Seleccionar una habitación para ver sus amenities
-        id_habitacion = input("Ingrese el ID de la habitación para ver los amenities: ")
-        habitacion_seleccionada = next((hab for hab in habitaciones if hab["id_habitacion"] == id_habitacion), None)
-
-        if not habitacion_seleccionada:
-            print("ID de habitación no válido. Por favor, seleccione una habitación de la lista.")
-            return
-
-        # Paso 5: Consultar amenities de la habitación seleccionada
+        id_habitacion= listar_habitaciones_con_validacion(id_hotel)
+        if not id_habitacion:
+            return       
         query_amenities = """
             MATCH (hab:Habitacion {id_habitacion: $id_habitacion})-[:INCLUYE]->(amenity:Amenity)
             RETURN amenity.nombre AS nombre
@@ -324,3 +290,103 @@ def mostrar_amenities_habitacion():
 
     except Exception as e:
         print(f"Error al mostrar los amenities de la habitación: {e}")
+
+def listar_habitaciones_con_validacion(id_hotel):
+    try:
+        query = """
+        MATCH (hotel:Hotel {id_hotel: $id_hotel})-[:TIENE]->(h:Habitacion)
+        RETURN h.id_habitacion, h.nombre
+        ORDER BY h.nombre
+        """
+        result = graph.run(query,id_hotel=id_hotel )
+        habitaciones = result.data()  # Devuelve una lista de diccionarios con los hoteles
+        if not habitaciones:
+            print("No hay habitaciones disponibles.")
+            return None
+        intentos= 0
+        while intentos<2:
+            print("Seleccione la habitacion:")
+            for idx, habitacion in enumerate(habitaciones, start=1):
+                print(f"{idx}. {habitacion ['h.id_habitacion']} ")
+        
+            seleccion = int (input("Ingrese el número del habitacion: "))
+            if 1 <= seleccion <= len(habitaciones):
+                return (habitaciones[seleccion - 1]['h.id_habitacion'])   
+            else:
+                print("Selección inválida.Intente nuevamente.")
+                intentos +=1
+        if intentos ==2:
+            print("Demasiados intentos fallidos. Volviendo al menú principal.")
+            return None
+    except Exception as e:
+        print(f"Error al listar los hoteles: {e}")
+        return None
+    
+
+def habitaciones_disponibles1(fecha_inicio, fecha_fin):
+    # Convertir fechas a objetos datetime
+    fecha_inicio = datetime.strptime(fecha_inicio, "%Y-%m-%d")
+    fecha_fin = datetime.strptime(fecha_fin, "%Y-%m-%d")
+
+    # Buscar reservas que coincidan o se solapen con el rango de fechas
+    reservas = reservas_collection.find({
+       "$or":[
+            {"fecha_entrada": {"$gte": fecha_inicio, "$lte": fecha_fin}},
+            {"fecha_salida": {"$gte": fecha_inicio, "$lte": fecha_fin}},
+            {"$and":[
+                {"fecha_entrada": {"$lte": fecha_inicio}},
+                {"fecha_salida": {"$gte": fecha_fin}}
+             ]}
+        ]
+    })
+
+    # Extraer las habitaciones ocupadas de las reservas
+    habitaciones_ocupadas = {reserva["id_habitacion"] for reserva in reservas}
+    
+    # Consultar en Neo4j las habitaciones que no están ocupadas
+    query = """
+        MATCH (h:Habitacion) 
+        WHERE NOT h.id_habitacion IN $habitaciones_ocupadas
+        RETURN h.id_habitacion AS id_habitacion
+    """
+    
+    # Ejecutar la consulta y obtener las habitaciones disponibles
+    result = graph.run(query, habitaciones_ocupadas=list(habitaciones_ocupadas))
+    
+    # Devolver las habitaciones disponibles como una lista de diccionarios
+    return [record["id_habitacion"] for record in result]    
+ 
+
+
+def habitaciones_disponibles1(fecha_inicio, fecha_fin):
+    # Convertir fechas a objetos datetime
+    fecha_inicio = datetime.strptime(fecha_inicio, "%Y-%m-%d")
+    fecha_fin = datetime.strptime(fecha_fin, "%Y-%m-%d")
+
+    # Buscar reservas que coincidan o se solapen con el rango de fechas
+    reservas = reservas_collection.find({
+       "$or":[
+            {"fecha_entrada": {"$gte": fecha_inicio, "$lte": fecha_fin}},
+            {"fecha_salida": {"$gte": fecha_inicio, "$lte": fecha_fin}},
+            {"$and":[
+                {"fecha_entrada": {"$lte": fecha_inicio}},
+                {"fecha_salida": {"$gte": fecha_fin}}
+             ]}
+        ]
+    })
+
+    # Extraer las habitaciones ocupadas de las reservas
+    habitaciones_ocupadas = {reserva["id_habitacion"] for reserva in reservas}
+    
+    # Consultar en Neo4j las habitaciones que no están ocupadas
+    query = """
+        MATCH (h:Habitacion) 
+        WHERE NOT h.id_habitacion IN $habitaciones_ocupadas
+        RETURN h.id_habitacion AS id_habitacion
+    """
+    
+    # Ejecutar la consulta y obtener las habitaciones disponibles
+    result = graph.run(query, habitaciones_ocupadas=list(habitaciones_ocupadas))
+    
+    # Devolver las habitaciones disponibles como una lista de diccionarios
+    return [record["id_habitacion"] for record in result]    

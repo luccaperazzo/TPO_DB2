@@ -6,7 +6,8 @@ from funciones_gestion import *
 from funciones_amenity import *
 from funciones_habitacion import *
 from funciones_huesped import *
-
+from funciones_reserva import *
+from funciones_hotel import *
 
 graph = Graph("bolt://neo4j:12345678@localhost:7687")
 client = MongoClient('mongodb://localhost:27017/')
@@ -26,7 +27,7 @@ def gestionar_entidad():
         opcion = input("Ingrese el número de la operación (1-7): ")
 
         # Para todas las opciones menos consultas, se selecciona la entidad
-        if opcion in ['1', '2', '3']:
+        if opcion in ['1', '3']:
             print("Seleccione la entidad:")
             print("1. Hotel")
             print("2. Habitación")
@@ -35,6 +36,15 @@ def gestionar_entidad():
             print("5. Huésped")
             print("6. Reserva")
             entidad = input("Ingrese el número de la entidad (1-6): ")
+
+        if opcion in ['2']:
+            print("Seleccione la entidad:")
+            print("1. Hotel")
+            print("2. Habitación")
+            print("3. Amenity")
+            print("4. POI")
+            print("5. Huésped")
+            entidad = input("Ingrese el número de la entidad (1-5): ")
 
         if opcion == '1':  # Crear
             if entidad == '1':  # Hotel
@@ -81,24 +91,7 @@ def gestionar_entidad():
                 modificar_amenity()
             
             elif entidad == '4':  # POI
-                intentos = 0
-                while intentos < 2 :
-                    id_poi = listar_pois()
-                    if not id_poi:
-                        print("ID inválido o no encontrado. Intente nuevamente.")
-                        intentos += 1
-                    else:
-                        break
-                if intentos == 2:
-                    print("Demasiados intentos fallidos. Volviendo al menú principal.")
-                    continue  # Volver al menú principal si falla después de 2 intentos
-                else:
-                    nombre = input("Ingrese el nuevo nombre del POI (o presione Enter para omitir): ")
-                    detalle = input("Ingrese el nuevo detalle del POI (o presione Enter para omitir): ")
-                    direccion = input("Ingrese la nueva direccion del POI (o presione Enter para omitir): ")
-                    tipo = input("Ingrese el nuevo tipo del POI (o presione Enter para omitir): ")
-                    modificar_poi(id_poi, nombre if nombre else None, detalle if detalle else None, 
-                                    direccion if direccion else None, tipo if tipo else None)
+                modificar_poi()
                 
             elif entidad == '5':  # Huésped
                 modificar_huesped()
@@ -115,7 +108,8 @@ def gestionar_entidad():
             
             elif entidad == '4':  # POI
                 baja_poi()
-
+            elif entidad == '5':  # Huesped
+                baja_huesped()
             elif entidad == '6': #Reserva
                 resultado = baja_reserva()
                 print(resultado)
@@ -142,11 +136,12 @@ def gestionar_entidad():
             elif consulta == '3':
                 pois_cerca_de_hotel()
             elif consulta == '4':  # Habitaciones disponibles
-                    id_hotel = input("Ingrese el id del hotel : ")
-                    fecha_entrada = input("Ingrese la fecha de entrada (YYYY-MM-DD): ")
-                    fecha_salida = input("Ingrese la fecha de salida (YYYY-MM-DD): ")
-                    # Llama a la función y filtra las habitaciones por hotel
-                    habitaciones_disponibles_en_hotel(id_hotel,fecha_entrada, fecha_salida)
+                    id_hotel = listar_hoteles_con_validacion()
+                    if id_hotel:
+                        fecha_entrada = input("Ingrese la fecha de entrada (YYYY-MM-DD): ")
+                        fecha_salida = input("Ingrese la fecha de salida (YYYY-MM-DD): ")
+                        # Llama a la función y filtra las habitaciones por hotel
+                        habitaciones_disponibles_en_hotel(id_hotel,fecha_entrada, fecha_salida)
                     
             elif consulta == '5':
                 mostrar_amenities_habitacion()

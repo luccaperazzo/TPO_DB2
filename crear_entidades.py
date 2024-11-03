@@ -8,7 +8,9 @@ from dateutil.relativedelta import relativedelta
 import random
 
 
-
+# Borrar reservas de mongo
+def borrar_bd_reservas():
+    borrar_bd_reservas()
 
 # Lista de datos de los huéspedes a crear
 def crear_huespedes():
@@ -104,7 +106,7 @@ def crear_habitaciones():
             return
 
         # Obtener la lista de amenities
-        amenitys = mostrar_amenitys()
+        amenitys = traer_amenitys()
         if not amenitys:
             print("No hay amenities disponibles para asignar a las habitaciones.")
             return
@@ -164,7 +166,7 @@ def crear_reservas():
     reservas = []
 
     # Rango de fechas base para las reservas
-    fecha_inicio_base = datetime(2024, 11, 5)
+    fecha_inicio_base = datetime(2025, 11, 5)
 
     for _ in range(10):  # Crear 10 reservas
         huesped = random.choice(huespedes)

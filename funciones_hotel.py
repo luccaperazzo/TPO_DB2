@@ -1,11 +1,15 @@
 from py2neo import Graph, Node
+from pymongo import MongoClient
 from funciones_gestion import *
 from geopy.geocoders import Nominatim
-#cambio lucca
+from datetime import datetime
+
 # Conexion BD Neo4J y geocoders
 graph = Graph("bolt://neo4j:12345678@localhost:7687")
 geolocator = Nominatim(user_agent="geoapi")
-
+client = MongoClient('mongodb://localhost:27017/')
+db = client['hotel_db']
+reservas_collection = db['reservas']
 
 def obtener_coordenadas(direccion):
     # Agrega "Capital Federal, Argentina" a la dirección
@@ -54,7 +58,7 @@ def alta_hotel(nombre, direccion, telefono, email):
 
         graph.run(subquery, id_hotel=str(id_hotel))
 
-        return f"Hotel '{nombre}' creado exitosamente."
+        print (f"Hotel '{nombre}' creado exitosamente.")
     except Exception as e:
         return f"Error al crear el hotel: {e}"
     
@@ -144,15 +148,15 @@ def listar_hoteles_con_validacion():
         hoteles = result.data()  # Devuelve una lista de diccionarios con los hoteles
         
         if not hoteles:
-            print("No hay hoteles disponibles para modificar.")
+            print("No hay hoteles disponibles.")
             return None
         intentos= 0
         while intentos<2:
-            print("Seleccione el hotel a modificar:")
+            print("Seleccione el hotel:")
             for idx, hotel in enumerate(hoteles, start=1):
                 print(f"{idx}. {hotel['h.nombre']} ")
         
-            seleccion = int(input("Ingrese el número del hotel que desea modificar: "))
+            seleccion = int(input("Ingrese el número del hotel: "))
             if 1 <= seleccion <= len(hoteles):
                 return hoteles[seleccion - 1]['h.id_hotel']  # Retorna el id del hotel seleccionado
             else:
@@ -164,6 +168,7 @@ def listar_hoteles_con_validacion():
     except Exception as e:
         print(f"Error al listar los hoteles: {e}")
         return None
+
 
 def mostrar_hoteles():
     try:
@@ -189,3 +194,43 @@ def mostrar_hoteles():
     except Exception as e:
         print(f"Error al mostrar los hoteles: {e}")
         return []
+
+
+def habitaciones_disponibles_en_hotel(id_hotel, fecha_inicio, fecha_fin):
+    # Convertir fechas a objetos datetime
+    #mostrar_hoteles()
+    fecha_inicio = datetime.strptime(fecha_inicio, "%Y-%m-%d")
+    fecha_fin = datetime.strptime(fecha_fin, "%Y-%m-%d")
+
+    # Obtener reservas que interfieren con el rango de fechas solicitado
+    reservas = reservas_collection.find({
+        "$or": [
+            {"fecha_entrada": {"$gte": fecha_inicio.strftime("%Y-%m-%d"), "$lte": fecha_fin.strftime("%Y-%m-%d")}},
+            {"fecha_salida": {"$gte": fecha_inicio.strftime("%Y-%m-%d"), "$lte": fecha_fin.strftime("%Y-%m-%d")}},
+            {
+                "$and": [
+                    {"fecha_entrada": {"$lte": fecha_inicio.strftime("%Y-%m-%d")}},
+                    {"fecha_salida": {"$gte": fecha_fin.strftime("%Y-%m-%d")}}
+                ]
+            }
+        ]
+    })
+
+    # Obtener IDs de habitaciones ocupadas
+    habitaciones_ocupadas = {reserva["id_habitacion"] for reserva in reservas}
+
+    # Consultar habitaciones disponibles en el hotel seleccionado
+    query_habitaciones = """
+        MATCH (h:Hotel {id_hotel: $id_hotel})-[:TIENE]->(hab:Habitacion) 
+        WHERE NOT hab.id_habitacion IN $habitaciones_ocupadas
+        RETURN hab.id_habitacion AS habitacion
+    """
+    
+    # Ejecutar la consulta
+    result_habitaciones = graph.run(query_habitaciones, 
+                                     habitaciones_ocupadas=list(habitaciones_ocupadas), 
+                                     id_hotel=id_hotel)
+
+    # Devolver las habitaciones disponibles
+    return [record['habitacion'] for record in result_habitaciones]
+

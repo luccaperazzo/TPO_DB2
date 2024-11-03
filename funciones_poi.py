@@ -56,19 +56,10 @@ def alta_poi(nombre, detalle, direccion, tipo):
         return f"Error al crear el POI: {e}"
     
 def baja_poi():
-
-    id_poi = input("Ingrese el ID del POI que desea eliminar: ")
     try:
-        # Verificar si el POI existe
-        check_query = """
-            MATCH (poi:POI {id_poi: $id_poi})
-            RETURN COUNT(poi) > 0 AS exists
-        """
-        exists_result = graph.run(check_query, id_poi=int(id_poi)).data()
-        
-        if not exists_result or not exists_result[0]['exists']:
-            print(f"No se encontró un POI con ID {id_poi}.")
-
+        id_poi = listar_pois_y_validar()
+        if not id_poi:
+            return none
         # Si el POI existe, proceder a eliminarlo
         query = """
             MATCH (poi:POI {id_poi: $id_poi})
@@ -78,11 +69,17 @@ def baja_poi():
         print(f"POI con ID {id_poi} eliminado exitosamente.")
     except Exception as e:
         return print(f"Error al eliminar el POI: {e}")
-
-
     
-def modificar_poi(id_poi, nombre=None, detalle=None, direccion=None, tipo=None):
+def modificar_poi():
     try:
+        id_poi = listar_pois_y_validar()
+        if not id_poi:
+            return
+        nombre = input("Ingrese el nuevo nombre del POI (o presione Enter para omitir): ")
+        detalle = input("Ingrese el nuevo detalle del POI (o presione Enter para omitir): ")
+        direccion = input("Ingrese la nueva direccion del POI (o presione Enter para omitir): ")
+        tipo = input("Ingrese el nuevo tipo del POI (o presione Enter para omitir): ")
+
         # Actualizar solo los campos que no son None
         update_fields = []
         if nombre:
@@ -125,27 +122,30 @@ def modificar_poi(id_poi, nombre=None, detalle=None, direccion=None, tipo=None):
     except Exception as e:
         return f"Error al modificar el POI: {e}"
     
-
-def listar_pois():
+def listar_pois_y_validar():
     try:
         query = "MATCH (p:POI) RETURN p.id_poi, p.nombre ORDER BY p.nombre"
         result = graph.run(query)
         pois = result.data()  # Devuelve una lista de diccionarios con los hoteles
         if not pois:
-            print("No hay pois disponibles para modificar.")
+            print("No hay pois disponibles.")
             return None
         
-        print("Seleccione el punto de interes a modificar:")
-        for idx, poi in enumerate (pois, start=1):
-            print(f"{idx}. {poi['p.nombre']} ")
+        intentos= 0
+        while intentos<2:
+            print("Seleccione el POI:")
+            for idx, poi in enumerate(pois, start=1):
+                print(f"{idx}. {poi['p.nombre']} ")
         
-        seleccion = int(input("Ingrese el número del punto de interes que desea modificar: "))
-        if 1 <= seleccion <= len(pois):
-            return pois[seleccion - 1]['p.id_poi']  # Retorna el id del hotel seleccionado
-        else:
-            print("Selección inválida.")
+            seleccion = int(input("Ingrese el número del POI: "))
+            if 1 <= seleccion <= len(pois):
+                return pois[seleccion - 1]['p.id_poi']  # Retorna el id del huesped seleccionado
+            else:
+                print("Selección inválida.Intente nuevamente.")
+                intentos +=1
+        if intentos ==2:
+            print("Demasiados intentos fallidos. Volviendo al menú principal.")
             return None
     except Exception as e:
-        print(f"Error al listar los hoteles: {e}")
+        print(f"Error al listar los huespedes: {e}")
         return None
-    

@@ -17,6 +17,14 @@ def borrar_bd_reservas1():
     resultado = reservas_collection.delete_many({})
     print(f"Documentos eliminados: {resultado.deleted_count}")
 
+
+def borrar_bd_nodos():
+    query = f"MATCH(n) detach delete n "
+    graph.run(query)
+    print(f"Todos los nodos han sido borrados")
+
+
+
 def crear_relacion_hotel_habitacion(id_hotel, id_habitacion):
     query = f"MATCH (h:Hotel {{id_hotel: '{id_hotel}'}}), (hab:Habitacion {{id_habitacion: '{id_habitacion}'}}) CREATE (h)-[:TIENE]->(hab)"
     graph.run(query)

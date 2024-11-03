@@ -160,6 +160,7 @@ def gestionar_entidad():
         
         elif opcion == '6':
             borrar_bd_reservas1()
+            borrar_bd_nodos()
             crear_huespedes()
             crear_hoteles()
             crear_pois()

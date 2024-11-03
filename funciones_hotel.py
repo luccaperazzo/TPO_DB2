@@ -67,9 +67,9 @@ def baja_hotel():
     try:
         id_hotel = listar_hoteles_con_validacion()
         if id_hotel:
-            # Eliminar las habitaciones asociadas al hotel
+            # Primero, eliminar todas las habitaciones asociadas al hotel junto con sus relaciones
             delete_rooms_query = """
-                MATCH (h:Hotel {id_hotel: $id_hotel})-[:CONTIENE]->(hab:Habitacion)
+                MATCH (h:Hotel {id_hotel: $id_hotel})-[:TIENE]->(hab:Habitacion)
                 DETACH DELETE hab
             """
             graph.run(delete_rooms_query, id_hotel=id_hotel)

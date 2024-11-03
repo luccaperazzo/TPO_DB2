@@ -7,7 +7,9 @@ from datetime import datetime, timedelta
 import random
 
 
-
+# Borrar reservas de mongo
+def borrar_bd_reservas():
+    borrar_bd_reservas()
 
 # Lista de datos de los huéspedes a crear
 def crear_huespedes():

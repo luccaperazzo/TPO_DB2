@@ -13,6 +13,10 @@ client = MongoClient('mongodb://localhost:27017/')
 db = client['hotel_db']
 reservas_collection = db['reservas']
 
+def borrar_bd_reservas ():
+    resultado = reservas_collection.delete_many({})
+    print(f"Documentos eliminados: {resultado.deleted_count}")
+
 def crear_relacion_hotel_habitacion(id_hotel, id_habitacion):
     query = f"MATCH (h:Hotel {{id_hotel: '{id_hotel}'}}), (hab:Habitacion {{id_habitacion: '{id_habitacion}'}}) CREATE (h)-[:TIENE]->(hab)"
     graph.run(query)
@@ -156,10 +160,8 @@ def pois_cerca_de_hotel():
         print("-----------------------------------------------------")
 
 
-
 # 6. Habitaciones disponibles en un rango de fechas
 # Función para obtener habitaciones disponibles en un hotel para un rango de fechas
-
 
 # 8. Reservas por número de confirmación (ID en MongoDB)
 
@@ -170,7 +172,6 @@ class ReservaIdError(Exception):
 def validar_reserva_id(reserva_id):
     if len(reserva_id) != 24:
         raise ReservaIdError("El número de confirmación debe tener exactamente 24 caracteres.")
-
 
 def reservas_por_numero_confirmacion():
     print("Lista de huéspedes disponibles:")
@@ -194,11 +195,6 @@ def reservas_por_numero_confirmacion():
         print(e)  # Imprimir el mensaje de error
     except Exception as e:
         print(f"Ocurrió un error inesperado: {e}")
-
-
-
-
-
 
 # 10. Traer las reservas por fecha de reserva en el hotel.
 from datetime import datetime
@@ -254,7 +250,6 @@ def reservas_por_fecha_en_hotel(fecha_inicio, fecha_fin):
     except Exception as e:
         print(f"Error al obtener las reservas por fecha en el hotel: {e}")
    
- 
 def habitaciones_disponibles1(fecha_inicio, fecha_fin):
     # Convertir fechas a objetos datetime
     fecha_inicio = datetime.strptime(fecha_inicio, "%Y-%m-%d")
@@ -288,7 +283,6 @@ def habitaciones_disponibles1(fecha_inicio, fecha_fin):
     # Devolver las habitaciones disponibles como una lista de diccionarios
     return [record["id_habitacion"] for record in result]    
     
-
 def listar_hoteles():
     """Función para listar todos los hoteles disponibles con su ID y nombre."""
     query_hoteles = """

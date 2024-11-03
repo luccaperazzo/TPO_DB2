@@ -136,7 +136,7 @@ def gestionar_entidad():
             elif consulta == '3':
                 pois_cerca_de_hotel()
             elif consulta == '4':  # Habitaciones disponibles
-                    id_hotel = listar_hoteles_con_validacion()
+                    id_hotel = ()
                     if id_hotel:
                         fecha_entrada = input("Ingrese la fecha de entrada (YYYY-MM-DD): ")
                         fecha_salida = input("Ingrese la fecha de salida (YYYY-MM-DD): ")

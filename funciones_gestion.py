@@ -13,7 +13,7 @@ client = MongoClient('mongodb://localhost:27017/')
 db = client['hotel_db']
 reservas_collection = db['reservas']
 
-def borrar_bd_reservas ():
+def borrar_bd_reservas1():
     resultado = reservas_collection.delete_many({})
     print(f"Documentos eliminados: {resultado.deleted_count}")
 
@@ -260,39 +260,6 @@ def reservas_por_fecha_en_hotel(fecha_inicio, fecha_fin):
         print(f"Error al obtener las reservas por fecha en el hotel: {e}")
    
  
-def habitaciones_disponibles1(fecha_inicio, fecha_fin):
-    # Convertir fechas a objetos datetime
-    fecha_inicio = datetime.strptime(fecha_inicio, "%Y-%m-%d")
-    fecha_fin = datetime.strptime(fecha_fin, "%Y-%m-%d")
-
-    # Buscar reservas que coincidan o se solapen con el rango de fechas
-    reservas = reservas_collection.find({
-       "$or":[
-            {"fecha_entrada": {"$gte": fecha_inicio, "$lte": fecha_fin}},
-            {"fecha_salida": {"$gte": fecha_inicio, "$lte": fecha_fin}},
-            {"$and":[
-                {"fecha_entrada": {"$lte": fecha_inicio}},
-                {"fecha_salida": {"$gte": fecha_fin}}
-             ]}
-        ]
-    })
-
-    # Extraer las habitaciones ocupadas de las reservas
-    habitaciones_ocupadas = {reserva["id_habitacion"] for reserva in reservas}
-    
-    # Consultar en Neo4j las habitaciones que no están ocupadas
-    query = """
-        MATCH (h:Habitacion) 
-        WHERE NOT h.id_habitacion IN $habitaciones_ocupadas
-        RETURN h.id_habitacion AS id_habitacion
-    """
-    
-    # Ejecutar la consulta y obtener las habitaciones disponibles
-    result = graph.run(query, habitaciones_ocupadas=list(habitaciones_ocupadas))
-    
-    # Devolver las habitaciones disponibles como una lista de diccionarios
-    return [record["id_habitacion"] for record in result]    
-    
 
 def listar_hoteles():
     """Función para listar todos los hoteles disponibles con su ID y nombre."""

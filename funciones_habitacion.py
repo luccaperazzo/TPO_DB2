@@ -343,3 +343,26 @@ def habitaciones_disponibles1(fecha_inicio, fecha_fin):
     # Devolver las habitaciones disponibles como una lista de diccionarios
     return [record["id_habitacion"] for record in result]    
  
+def obtener_informacion_habitacion(id_habitacion):
+    try:
+        query_habitacion = """
+            MATCH (hab:Habitacion {id_habitacion: $id_habitacion})
+            OPTIONAL MATCH (hab)-[:INCLUYE]->(amenity:Amenity)
+            RETURN hab.tipo_habitacion AS tipo_habitacion, collect(amenity.nombre) AS amenities
+        """
+        result = graph.run(query_habitacion, id_habitacion=id_habitacion).data()
+        
+        if not result:
+            return None
+
+        habitacion_info = result[0]
+        tipo_habitacion = habitacion_info['tipo_habitacion']
+        amenities = habitacion_info['amenities'] if habitacion_info['amenities'] else []
+
+        return {
+            'tipo_habitacion': tipo_habitacion,
+            'amenities': amenities
+        }
+    except Exception as e:
+        print(f"Error al obtener la información de la habitación: {e}")
+        return None

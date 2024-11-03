@@ -1,11 +1,15 @@
 from py2neo import Graph, Node
+from pymongo import MongoClient
 from funciones_gestion import *
 from geopy.geocoders import Nominatim
-#cambio lucca
+from datetime import datetime
+
 # Conexion BD Neo4J y geocoders
 graph = Graph("bolt://neo4j:12345678@localhost:7687")
 geolocator = Nominatim(user_agent="geoapi")
-
+client = MongoClient('mongodb://localhost:27017/')
+db = client['hotel_db']
+reservas_collection = db['reservas']
 
 def obtener_coordenadas(direccion):
     # Agrega "Capital Federal, Argentina" a la dirección

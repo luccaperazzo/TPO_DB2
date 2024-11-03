@@ -4,6 +4,7 @@ from funciones_hotel import *
 from funciones_poi import *
 from funciones_amenity import *
 from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 import random
 
 
@@ -149,10 +150,17 @@ def crear_habitaciones():
 
 
 
+import random
+from datetime import datetime, timedelta
+
+import random
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
+
 def crear_reservas():
-    # Lista de huéspedes y habitaciones
+    # Lista de huéspedes
     huespedes = [1, 2, 3, 4, 5]  # IDs de los huéspedes generados previamente
-    habitaciones = ["Hotel_Palermo_1", "Hotel_Recoleta_1", "Hotel_Obelisco_1", "Hotel_San_Telmo_1", "Hotel_Puerto_Madero_1"]  # IDs de habitaciones creadas
+    habitaciones_base = ["Hotel_Palermo", "Hotel_Recoleta", "Hotel_Obelisco", "Hotel_San_Telmo", "Hotel_Puerto_Madero"]  # Base de nombres de habitaciones
     reservas = []
 
     # Rango de fechas base para las reservas
@@ -160,9 +168,17 @@ def crear_reservas():
 
     for _ in range(10):  # Crear 10 reservas
         huesped = random.choice(huespedes)
-        habitacion = random.choice(habitaciones)
-        fecha_entrada = fecha_inicio_base + timedelta(days=random.randint(0, 10))
-        fecha_salida = fecha_entrada + timedelta(days=random.randint(1, 5))
+        
+        # Selecciona una habitación base y altera el último dígito
+        habitacion_base = random.choice(habitaciones_base)
+        ultimo_digito = random.choice([1, 2])  # Genera aleatoriamente 1 o 2
+        habitacion = f"{habitacion_base}_{ultimo_digito}"  # Crea el nombre de la habitación
+        
+        # Generar fecha de entrada y salida
+        fecha_entrada = fecha_inicio_base + relativedelta(months=random.randint(0, 12), days=random.randint(0, 29))
+        fecha_salida = fecha_entrada + relativedelta(days=random.randint(1, 20))
+        
+        # Calcular precio
         precio = random.randint(100, 500) * (fecha_salida - fecha_entrada).days
 
         # Crear una reserva en MongoDB
@@ -182,3 +198,6 @@ def crear_reservas():
         except Exception as e:
             print(f"Error al crear la reserva: {e}")
 
+# Asegúrate de importar y configurar `reservas_collection` antes de ejecutar esta función.
+
+# Asegúrate de llamar a la función crear_reservas() en el lugar adecuado de tu código.

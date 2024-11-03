@@ -148,38 +148,45 @@ def crear_habitaciones():
 
 
 
-
-
 def crear_reservas():
     # Lista de huéspedes
     huespedes = [1, 2, 3, 4, 5]  # IDs de los huéspedes generados previamente
     habitaciones = ["Hotel_Puerto_Madero_1", "Hotel_Puerto_Madero_2", "Hotel_Recoleta_1"]  # IDs de habitaciones creadas
     reservas = []
 
-    # Rango de fechas base para las reservas
-    fecha_inicio_base = datetime(2025, 11, 5)
+    # Fechas hardcodeadas para las reservas
+    fechas_reservas = [
+        ("2025-11-05", "2025-11-10"),
+        ("2025-11-11", "2025-11-15"),
+        ("2025-11-16", "2025-11-20"),
+        ("2025-11-21", "2025-11-25"),
+        ("2025-11-26", "2025-11-30"),
+        ("2025-12-01", "2025-12-05"),
+        ("2025-12-06", "2025-12-10"),
+        ("2025-12-11", "2025-12-15"),
+        ("2025-12-16", "2025-12-20"),
+        ("2025-12-21", "2025-12-25"),
+    ]
 
-    for _ in range(10):  # Crear 10 reservas
-        huesped = random.choice(huespedes)
+    for i in range(10):  # Crear 10 reservas
+        huesped = huespedes[i % len(huespedes)]  # Selecciona un huésped en base al índice
         
-        # Selecciona una habitación base y altera el último dígito
-        habitacion_base = random.choice(habitaciones)
-        ultimo_digito = random.choice([1, 2])  # Genera aleatoriamente 1 o 2
-        habitacion = f"{habitacion_base}_{ultimo_digito}"  # Crea el nombre de la habitación
+        # Selecciona una habitación
+        habitacion = habitaciones[i % len(habitaciones)]
         
-        # Generar fecha de entrada y salida
-        fecha_entrada = fecha_inicio_base + relativedelta(months=random.randint(0, 12), days=random.randint(0, 29))
-        fecha_salida = fecha_entrada + relativedelta(days=random.randint(1, 20))
+        # Selecciona las fechas de entrada y salida de la lista hardcodeada
+        fecha_entrada, fecha_salida = fechas_reservas[i]
         
         # Calcular precio
-        precio = random.randint(100, 500) * (fecha_salida - fecha_entrada).days
+        dias_reserva = (datetime.strptime(fecha_salida, "%Y-%m-%d") - datetime.strptime(fecha_entrada, "%Y-%m-%d")).days
+        precio = random.randint(100, 500) * dias_reserva
 
         # Crear una reserva en MongoDB
         reserva = {
             "id_huesped": huesped,
             "id_habitacion": habitacion,
-            "fecha_entrada": fecha_entrada.strftime("%Y-%m-%d"),
-            "fecha_salida": fecha_salida.strftime("%Y-%m-%d"),
+            "fecha_entrada": fecha_entrada,
+            "fecha_salida": fecha_salida,
             "precio": precio
         }
         
@@ -190,6 +197,7 @@ def crear_reservas():
             print(f"Reserva creada: {reserva}")
         except Exception as e:
             print(f"Error al crear la reserva: {e}")
+
 
 # Asegúrate de importar y configurar `reservas_collection` antes de ejecutar esta función.
 

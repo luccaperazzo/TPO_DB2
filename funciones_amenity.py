@@ -38,7 +38,7 @@ def traer_amenitys():
             for record in result:
                 id_amenity = record['id']
                 nombre = record['nombre']
-                print(f"ID: {id_amenity}, Nombre: {nombre}")
+                print(f"{id_amenity}. Nombre: {nombre}")
             return result
         else:
             print("No hay amenidades disponibles en la base de datos.")

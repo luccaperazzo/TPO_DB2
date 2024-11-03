@@ -5,6 +5,7 @@ from bson.objectid import ObjectId
 from funciones_habitacion import *
 from funciones_hotel import *
 
+
 graph = Graph("bolt://neo4j:12345678@localhost:7687")
 client = MongoClient('mongodb://localhost:27017/')
 db = client['hotel_db']

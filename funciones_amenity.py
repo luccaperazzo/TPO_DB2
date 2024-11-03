@@ -35,10 +35,10 @@ def traer_amenitys():
 
         # Mostrar los IDs y nombres de las amenidades
         if result:
-            #for record in result:
-            #    id_amenity = record['id']
-             #   nombre = record['nombre']
-              #  print(f"ID: {id_amenity}, Nombre: {nombre}")
+            for record in result:
+                id_amenity = record['id']
+                nombre = record['nombre']
+                print(f"ID: {id_amenity}, Nombre: {nombre}")
             return result
         else:
             print("No hay amenidades disponibles en la base de datos.")

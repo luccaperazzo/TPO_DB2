@@ -37,7 +37,7 @@ def verificar_habitacion_en_hotel(id_habitacion):
     resultado = graph.run(query).data()
     return len(resultado) > 0  # Si ya está asignada, devuelve True
 
-# 3. Hoteles cerca de un POI
+# 1. Hoteles cerca de un POI
 def hoteles_cerca_de_poi():
     # Consulta para obtener todos los POIs con al menos un hotel cercano y el conteo de hoteles cercanos
     query_pois = """
@@ -49,20 +49,24 @@ def hoteles_cerca_de_poi():
     # Listar los POIs disponibles y su cantidad de hoteles cercanos
     print("Lista de POIs disponibles con hoteles cercanos:")
     pois_disponibles = []
-    for record in pois_result:
+    for idx, record in enumerate (pois_result, start=1):
         poi_nombre = record['poi_nombre']
         poi_detalle = record['poi_detalle']
         cantidad_hoteles = record['cantidad_hoteles']
         pois_disponibles.append(poi_nombre)
-        print(f"POI: {poi_nombre}, Detalle: {poi_detalle} --> Hoteles cercanos: {cantidad_hoteles}")
+        print(f"{idx}. {poi_nombre}, Detalle: {poi_detalle} --> Hoteles cercanos: {cantidad_hoteles}")
 
-    # Solicitar al usuario que elija un POI
-    poi_nombre = input("\nIngrese el nombre de un POI para ver los hoteles cercanos: ")
-
-    if poi_nombre not in pois_disponibles:
-        print("El POI ingresado no está en la lista de POIs disponibles.")
+    # Solicitar al usuario que elija un POI por índice
+    try:
+        seleccion_idx = int(input("\nIngrese el número del POI para ver los hoteles cercanos: ")) - 1
+        if seleccion_idx < 0 or seleccion_idx >= len(pois_disponibles):
+            print("El número ingresado no es válido. Debe estar entre 1 y", len(pois_disponibles))
+            return
+        poi_nombre = pois_disponibles[seleccion_idx]  # Obtener el nombre del POI usando el índice
+    except ValueError:
+        print("Entrada inválida. Por favor, ingrese un número.")
         return
-
+    
     # Consulta para obtener detalles de hoteles cercanos al POI seleccionado
     query_hoteles = """
     MATCH (poi:POI {nombre: $poi_nombre})<-[:CERCA_DE]-(hotel:Hotel)
@@ -115,7 +119,7 @@ def informacion_hotel():
         print("-----------------------------------------------------")
 
 
-# 5. POIs cerca de un hotel
+# 3. POIs cerca de un hotel
 def pois_cerca_de_hotel():
     # Consulta para obtener todos los hoteles con al menos un POI cercano y el conteo de POIs
     query_hoteles = """
@@ -127,18 +131,23 @@ def pois_cerca_de_hotel():
     # Listar los hoteles disponibles con POIs cercanos y la cantidad de POIs
     print("Lista de hoteles con POIs cercanos:")
     hoteles_disponibles = []
-    for record in hoteles_result:
+    for idx, record in enumerate (hoteles_result, start=1):
         hotel_nombre = record['hotel_nombre']
         hotel_direccion = record['hotel_direccion']
         cantidad_pois = record['cantidad_pois']
         hoteles_disponibles.append(hotel_nombre)
-        print(f"Hotel: {hotel_nombre}, Dirección: {hotel_direccion}, POIs cercanos: {cantidad_pois}")
+        print(f"{idx}. {hotel_nombre}, Dirección: {hotel_direccion}, POIs cercanos: {cantidad_pois}")
 
-    # Solicitar al usuario que elija un hotel
-    hotel_nombre = input("\nIngrese el nombre de un hotel para ver los POIs cercanos: ")
-
-    if hotel_nombre not in hoteles_disponibles:
-        print("El hotel ingresado no está en la lista de hoteles disponibles.")
+    # Solicitar al usuario que elija un POI por índice
+    try:
+        seleccion_idx = int(input("\nIngrese el número del Hotel para ver los POI´s cercanos: ")) - 1
+        if seleccion_idx < 0 or seleccion_idx >= len(hoteles_disponibles):
+            print("El número ingresado no es válido. Debe estar entre 1 y", len(hoteles_disponibles))
+            return
+        hotel_nombre = hoteles_disponibles[seleccion_idx]  # Obtener el nombre del POI usando el índice
+        print(hotel_nombre)
+    except ValueError:
+        print("Entrada inválida. Por favor, ingrese un número.")
         return
 
     # Consulta para obtener los detalles de los POIs cercanos al hotel seleccionado

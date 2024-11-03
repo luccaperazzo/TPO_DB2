@@ -84,7 +84,6 @@ def modificar_hotel():
         id_hotel = listar_hoteles_con_validacion ()
         if id_hotel:        
             # Solicitar los datos a modificar
-            nombre = input("Ingrese el nuevo nombre del hotel (o presione Enter para dejar igual): ")
             direccion = input("Ingrese la nueva dirección del hotel (o presione Enter para dejar igual): ")
             telefono = input("Ingrese el nuevo teléfono del hotel (o presione Enter para dejar igual): ")
             email = input("Ingrese el nuevo email del hotel (o presione Enter para dejar igual): ")
@@ -92,8 +91,6 @@ def modificar_hotel():
             # Actualizar solo los campos proporcionados
             update_fields = []
 
-            if nombre:
-                update_fields.append(f"h.nombre = '{nombre}'")
             if direccion:
                 update_fields.append(f"h.direccion = '{direccion}'")
                 latitud, longitud = obtener_coordenadas(direccion)

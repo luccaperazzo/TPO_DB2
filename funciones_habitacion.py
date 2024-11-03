@@ -98,33 +98,20 @@ def baja_habitacion():
         id_hotel = listar_hoteles_con_validacion()
         if not id_hotel:
             return
-
-        # Paso 3: Mostrar habitaciones del hotel seleccionado
-        query_habitaciones = """
-            MATCH (h:Hotel {id_hotel: $id_hotel})-[:TIENE]->(hab:Habitacion)
-            RETURN hab.id_habitacion AS id_habitacion, hab.tipo_habitacion AS tipo_habitacion
-        """
-        habitaciones = graph.run(query_habitaciones, id_hotel=id_hotel).data()
-
-        if not habitaciones:
-            print("No hay habitaciones disponibles en el hotel seleccionado.")
+        # Paso 4: Seleccionar una habitación
+        id_habitacion= listar_habitaciones_con_validacion(id_hotel)
+        if not id_habitacion:
             return
-
-        print("Habitaciones disponibles:")
-        for hab in habitaciones:
-            print(f"ID: {hab['id_habitacion']}, Tipo: {hab['tipo_habitacion']}")
-
-        # Paso 4: Seleccionar una habitación para eliminar
-        id_habitacion = input("Ingrese el ID de la habitación que desea eliminar: ")
-        habitacion_seleccionada = next((hab for hab in habitaciones if hab["id_habitacion"] == id_habitacion), None)
-
-        if not habitacion_seleccionada:
-            print("ID de habitación no válido. Por favor, seleccione una habitación de la lista.")
-            return
-
+       
         # Paso 5: Mostrar detalles de la habitación
+        query_habitacion = """
+        MATCH (h:Habitacion {id_habitacion: $id_habitacion})
+        RETURN h.tipo_habitacion AS tipo_habitacion, h.id_habitacion AS nombre
+        """
+        habitacion_actual = graph.run(query_habitacion, id_habitacion=id_habitacion).data()
+        tipo_actual = habitacion_actual [0]["tipo_habitacion"]
         print(f"Detalles de la habitación seleccionada:")
-        print(f"ID: {habitacion_seleccionada['id_habitacion']}, Tipo: {habitacion_seleccionada['tipo_habitacion']}")
+        print(f"ID: {id_habitacion}, Tipo: {tipo_actual}")
 
         # Paso 6: Confirmar la operación
         confirmar = input("¿Está seguro de que desea eliminar esta habitación? (s/n): ").lower()
@@ -190,10 +177,8 @@ def modificar_habitacion():
             RETURN a.id_amenity AS id_amenity, a.nombre AS nombre
         """
         amenities_actuales = graph.run(query_amenities, id_habitacion=id_habitacion).data()
-        
         print("Amenities actuales:")
-        for amenity in amenities_actuales:
-            print(f"ID: {amenity['id_amenity']}, Nombre: {amenity['nombre']}")
+        traer_amenitys()
 
         # Paso 5: Modificar tipo de habitación o amenities
         modificar_tipo = input("¿Desea modificar el tipo de habitación? (s/n): ").lower()
@@ -322,7 +307,6 @@ def listar_habitaciones_con_validacion(id_hotel):
         print(f"Error al listar los hoteles: {e}")
         return None
     
-
 def habitaciones_disponibles1(fecha_inicio, fecha_fin):
     # Convertir fechas a objetos datetime
     fecha_inicio = datetime.strptime(fecha_inicio, "%Y-%m-%d")
@@ -356,8 +340,6 @@ def habitaciones_disponibles1(fecha_inicio, fecha_fin):
     # Devolver las habitaciones disponibles como una lista de diccionarios
     return [record["id_habitacion"] for record in result]    
  
-
-
 def habitaciones_disponibles1(fecha_inicio, fecha_fin):
     # Convertir fechas a objetos datetime
     fecha_inicio = datetime.strptime(fecha_inicio, "%Y-%m-%d")

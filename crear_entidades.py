@@ -103,7 +103,7 @@ def crear_habitaciones():
             return
 
         # Obtener la lista de amenities
-        amenitys = mostrar_amenitys()
+        amenitys = traer_amenitys()
         if not amenitys:
             print("No hay amenities disponibles para asignar a las habitaciones.")
             return

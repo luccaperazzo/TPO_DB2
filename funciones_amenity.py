@@ -27,7 +27,7 @@ def alta_amenity(nombre):
 
 
 
-def mostrar_amenitys():
+def traer_amenitys():
     try:
         # Obtener todos los amenities con sus IDs
         query = "MATCH (a:Amenity) RETURN a.id_amenity AS id, a.nombre AS nombre"
@@ -35,51 +35,42 @@ def mostrar_amenitys():
 
         # Mostrar los IDs y nombres de las amenidades
         if result:
-            for record in result:
-                id_amenity = record['id']
-                nombre = record['nombre']
-                print(f"ID: {id_amenity}, Nombre: {nombre}")
+            #for record in result:
+            #    id_amenity = record['id']
+             #   nombre = record['nombre']
+              #  print(f"ID: {id_amenity}, Nombre: {nombre}")
+            return result
         else:
             print("No hay amenidades disponibles en la base de datos.")
-        return result
+        
     except Exception as e:
         print(f"Error al obtener las amenidades: {e}")
 
 
 def baja_amenity():
     try:
-        while True:
-            # Mostrar las amenidades actuales
-            mostrar_amenitys()
-    
-    
-            # Solicitar el ID de la amenidad a eliminar
-            id_amenity = input("Ingrese el ID de la amenidad que desea eliminar: ")
+        id_amenity = listar_amenitys_con_validacion ()
+        if not id_amenity:
+            return
+        # Intentar eliminar la amenidad
+        query = """
+            MATCH (a:Amenity {id_amenity: $id_amenity})
+            DETACH DELETE a
+        """
+        graph.run(query, id_amenity=id_amenity)
             
-            # Verificar si el ID ingresado existe en la lista de amenidades
-            if not any(amenity["id"] == id_amenity for amenity in amenitys):
-                print(f"El ID {id_amenity} no existe. Por favor, seleccione un ID válido.")
-                continue  # Repetir el bucle para solicitar un ID válido
+        # Verificar si la amenidad todavía existe
+        verificar_query = """
+            MATCH (a:Amenity {id_amenity: $id_amenity}) RETURN a
+        """
+        result = graph.run(verificar_query, id_amenity=id_amenity).data()
             
-            # Intentar eliminar la amenidad
-            query = """
-                MATCH (a:Amenity {id_amenity: $id_amenity})
-                DETACH DELETE a
-            """
-            graph.run(query, id_amenity=id_amenity)
+        # Confirmación o aviso según la existencia del nodo
+        if result:
+            print(f"No se puede eliminar el amenity con ID {id_amenity} porque está asociado a una habitación.")
+        else:
+            print(f"Amenity con ID {id_amenity} eliminado exitosamente.")
             
-            # Verificar si la amenidad todavía existe
-            verificar_query = """
-                MATCH (a:Amenity {id_amenity: $id_amenity}) RETURN a
-            """
-            result = graph.run(verificar_query, id_amenity=id_amenity).data()
-            
-            # Confirmación o aviso según la existencia del nodo
-            if result:
-                print(f"No se puede eliminar el amenity con ID {id_amenity} porque está asociado a una habitación.")
-            else:
-                print(f"Amenity con ID {id_amenity} eliminado exitosamente.")
-            break  # Salir del bucle después de una operación exitosa o fallida
             
     except Exception as e:
         print(f"Error al intentar eliminar el amenity: {e}")
@@ -87,20 +78,10 @@ def baja_amenity():
     
 def modificar_amenity():
     try:
-        # Mostrar las amenidades actuales
-        amenitys = mostrar_amenitys()
-        if not amenitys:
-            print("No hay amenidades disponibles para modificar.")
-            return
-        
-        # Solicitar el ID de la amenidad a modificar
-        id_amenity = input("Ingrese el ID de la amenidad que desea modificar: ")
 
-        # Verificar si el ID ingresado existe en la lista de amenidades
-        if not any(amenity["id"] == id_amenity for amenity in amenitys):
-            print(f"El ID {id_amenity} no existe. Por favor, seleccione un ID válido.")
-            return  # Terminar la función si el ID no es válido
-        
+        id_amenity = listar_amenitys_con_validacion()
+        if not id_amenity:
+            return
         while True:  # Repetir hasta que se ingrese un nombre válido
             # Solicitar el nuevo nombre para la amenidad
             nuevo_nombre = input("Ingrese el nuevo nombre para la amenidad: ").strip()  # Strip para eliminar espacios
@@ -134,3 +115,30 @@ def modificar_amenity():
         print(f"Error al intentar modificar el amenity: {e}")
 
 
+def listar_amenitys_con_validacion():
+    try:
+        query = "MATCH (a:Amenity) RETURN a.id_amenity, a.nombre ORDER BY a.nombre"
+        result = graph.run(query)
+        amenitys = result.data()  # Devuelve una lista de diccionarios con los Amenitys
+        
+        if not amenitys:
+            print("No hay amenitys disponibles para modificar.")
+            return None
+        intentos= 0
+        while intentos<2:
+            print("Seleccione el amenity:")
+            for idx, amenity in enumerate(amenitys, start=1):
+                print(f"{idx}. {amenity['a.nombre']} ")
+        
+            seleccion = int(input("Ingrese el número del amenity: "))
+            if 1 <= seleccion <= len(amenitys):
+                return amenitys[seleccion - 1]['a.id_amenity']  # Retorna el id del amenity seleccionado
+            else:
+                print("Selección inválida.Intente nuevamente.")
+                intentos +=1
+        if intentos ==2:
+            print("Demasiados intentos fallidos. Volviendo al menú principal.")
+            return None
+    except Exception as e:
+        print(f"Error al listar los amenitys: {e}")
+        return None

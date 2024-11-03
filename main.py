@@ -26,7 +26,7 @@ def gestionar_entidad():
         opcion = input("Ingrese el número de la operación (1-7): ")
 
         # Para todas las opciones menos consultas, se selecciona la entidad
-        if opcion in ['1', '2', '3']:
+        if opcion in ['1', '3']:
             print("Seleccione la entidad:")
             print("1. Hotel")
             print("2. Habitación")
@@ -35,6 +35,15 @@ def gestionar_entidad():
             print("5. Huésped")
             print("6. Reserva")
             entidad = input("Ingrese el número de la entidad (1-6): ")
+
+        if opcion in ['2']:
+            print("Seleccione la entidad:")
+            print("1. Hotel")
+            print("2. Habitación")
+            print("3. Amenity")
+            print("4. POI")
+            print("5. Huésped")
+            entidad = input("Ingrese el número de la entidad (1-5): ")
 
         if opcion == '1':  # Crear
             if entidad == '1':  # Hotel

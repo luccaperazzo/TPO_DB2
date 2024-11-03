@@ -159,6 +159,7 @@ def gestionar_entidad():
                 ver_detalles_huesped()
         
         elif opcion == '6':
+            borrar_bd_reservas1()
             crear_huespedes()
             crear_hoteles()
             crear_pois()

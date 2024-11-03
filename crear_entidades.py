@@ -3,15 +3,11 @@ from funciones_huesped import *
 from funciones_hotel import *
 from funciones_poi import *
 from funciones_amenity import *
-from datetime import datetime, timedelta
 import random
 from datetime import datetime, timedelta
-from datetime import datetime, timedelta
 from dateutil import relativedelta
+from dateutil.relativedelta import relativedelta
 
-# Borrar reservas de mongo
-def borrar_bd_reservas():
-    borrar_bd_reservas1()
 
 # Lista de datos de los huéspedes a crear
 def crear_huespedes():

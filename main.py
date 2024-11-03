@@ -98,7 +98,8 @@ def gestionar_entidad():
             
             elif entidad == '4':  # POI
                 baja_poi()
-
+            elif entidad == '5':  # Huesped
+                baja_huesped()
             elif entidad == '6': #Reserva
                 resultado = baja_reserva()
                 print(resultado)

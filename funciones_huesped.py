@@ -91,6 +91,20 @@ def modificar_huesped():
     except Exception as e:
         print(f"Error al modificar el huésped: {e}")
 
+#Baja huesped
+def baja_huesped():
+    try:
+        id_huesped = listar_huespedes_con_validacion()
+        if id_huesped:
+            query = """
+                MATCH (h:Huesped {id_huesped: $id_huesped}) 
+                DETACH DELETE h
+            """
+            graph.run(query, id_huesped=id_huesped)
+            print ( f"Huesped con ID {id_huesped} eliminado exitosamente.")
+    except Exception as e:
+        print('Error al eliminar el huesped')
+        return f"Error al eliminar el huesped: {e}"
 
 ## Consultas 
 def ver_detalles_huesped():
@@ -133,29 +147,6 @@ def reservas_por_huesped():
     else:
         print("No se encontraron reservas para este huésped.")
 
-
-
-#def get_huespedes():
-    #try:
-        # Consulta para obtener los nombres y apellidos de todos los huéspedes
-        #query = """
-        #MATCH (h:Huesped)
-        #RETURN h.nombre AS nombre, h.apellido AS apellido,h.id_huesped as id_huesped
-        #"""
-        #result = graph.run(query).data()
-
-        # Mostrar los nombres y apellidos
-        #if result:
-        #    for record in result:
-       #         nombre = record['nombre']
-      #          apellido = record['apellido']
-     #           id_huesped = record['id_huesped']
-    #            print(f"Nombre: {nombre}, Apellido: {apellido}, ID : {id_huesped}")
-   #     else:
-  #          print("No se encontraron huéspedes en la base de datos.")
-
- #   except Exception as e:
-#        print(f"Error al obtener los huéspedes: {e}")
 
 
 def listar_huespedes_con_validacion():

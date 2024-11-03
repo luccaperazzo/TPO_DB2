@@ -453,9 +453,9 @@ def baja_reserva():
         return f"No se encontró la reserva con ID: {id_reserva}"
 
     # Confirmar eliminación
-    confirmacion = input(f"¿Está seguro de que desea eliminar la reserva con ID {id_reserva}? (sí/no): ")
+    confirmacion = input(f"¿Está seguro de que desea eliminar la reserva con ID {id_reserva}? (s/n): ")
     
-    if confirmacion.lower() == 'si':
+    if confirmacion.lower() == 's':
         # Eliminar la reserva de MongoDB
         reservas_collection.delete_one({"_id": ObjectId(id_reserva)})
         return f"Reserva con ID {id_reserva} eliminada exitosamente."

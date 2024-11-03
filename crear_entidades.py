@@ -152,12 +152,11 @@ def crear_habitaciones():
 def crear_reservas():
     # Lista de huéspedes, habitaciones, y fechas base
     huespedes = [1, 2, 3, 4, 5]  # IDs de los huéspedes generados previamente
-    habitaciones = ["Hotel_1_1", "Hotel_1_2", "Hotel_2_1", "Hotel_2_3", "Hotel_3_1"]  # IDs de habitaciones creadas
-    hoteles_disponibles = ["Hotel_1", "Hotel_2", "Hotel_3"]  # IDs de hoteles disponibles
+    habitaciones = ["Hotel_Puerto_Madero_1", "Hotel_Puerto_Madero_2", "Hotel_Puerto_Madero_3", "Hotel_Recoleta_2", "Hotel_Recoleta_3"]  # IDs de habitaciones creadas
     reservas = []
 
     # Rango de fechas base para las reservas
-    fecha_inicio_base = datetime(2024, 11, 5)
+    fecha_inicio_base = datetime(2025, 11, 5)
 
     for _ in range(10):  # Crear 10 reservas
         huesped = random.choice(huespedes)

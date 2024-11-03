@@ -122,7 +122,7 @@ def listar_amenitys_con_validacion():
         amenitys = result.data()  # Devuelve una lista de diccionarios con los Amenitys
         
         if not amenitys:
-            print("No hay amenitys disponibles para modificar.")
+            print("No hay amenitys disponibles.")
             return None
         intentos= 0
         while intentos<2:

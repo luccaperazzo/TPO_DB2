@@ -58,7 +58,7 @@ def alta_hotel(nombre, direccion, telefono, email):
 
         graph.run(subquery, id_hotel=str(id_hotel))
 
-        return f"Hotel '{nombre}' creado exitosamente."
+        print (f"Hotel '{nombre}' creado exitosamente.")
     except Exception as e:
         return f"Error al crear el hotel: {e}"
     
@@ -148,15 +148,15 @@ def listar_hoteles_con_validacion():
         hoteles = result.data()  # Devuelve una lista de diccionarios con los hoteles
         
         if not hoteles:
-            print("No hay hoteles disponibles para modificar.")
+            print("No hay hoteles disponibles.")
             return None
         intentos= 0
         while intentos<2:
-            print("Seleccione el hotel a modificar:")
+            print("Seleccione el hotel:")
             for idx, hotel in enumerate(hoteles, start=1):
                 print(f"{idx}. {hotel['h.nombre']} ")
         
-            seleccion = int(input("Ingrese el número del hotel que desea modificar: "))
+            seleccion = int(input("Ingrese el número del hotel: "))
             if 1 <= seleccion <= len(hoteles):
                 return hoteles[seleccion - 1]['h.id_hotel']  # Retorna el id del hotel seleccionado
             else:

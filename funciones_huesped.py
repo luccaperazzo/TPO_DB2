@@ -156,7 +156,7 @@ def listar_huespedes_con_validacion():
         huespedes = result.data()  # Devuelve una lista de diccionarios con los huespedes
         
         if not huespedes:
-            print("No hay huespedes disponibles para modificar.")
+            print("No hay huespedes disponibles.")
             return None
         intentos= 0
         while intentos<2:
@@ -164,7 +164,7 @@ def listar_huespedes_con_validacion():
             for idx, huesped in enumerate(huespedes, start=1):
                 print(f"{idx}. {huesped['h.nombre']} ")
         
-            seleccion = int(input("Ingrese el número del huesped que desea modificar: "))
+            seleccion = int(input("Ingrese el número del huesped: "))
             if 1 <= seleccion <= len(huespedes):
                 return huespedes[seleccion - 1]['h.id_huesped']  # Retorna el id del huesped seleccionado
             else:

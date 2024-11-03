@@ -69,8 +69,6 @@ def baja_poi():
         print(f"POI con ID {id_poi} eliminado exitosamente.")
     except Exception as e:
         return print(f"Error al eliminar el POI: {e}")
-
-
     
 def modificar_poi():
     try:
@@ -124,14 +122,13 @@ def modificar_poi():
     except Exception as e:
         return f"Error al modificar el POI: {e}"
     
-
 def listar_pois_y_validar():
     try:
         query = "MATCH (p:POI) RETURN p.id_poi, p.nombre ORDER BY p.nombre"
         result = graph.run(query)
         pois = result.data()  # Devuelve una lista de diccionarios con los hoteles
         if not pois:
-            print("No hay pois disponibles para modificar.")
+            print("No hay pois disponibles.")
             return None
         
         intentos= 0
@@ -140,7 +137,7 @@ def listar_pois_y_validar():
             for idx, poi in enumerate(pois, start=1):
                 print(f"{idx}. {poi['p.nombre']} ")
         
-            seleccion = int(input("Ingrese el número del poi: "))
+            seleccion = int(input("Ingrese el número del POI: "))
             if 1 <= seleccion <= len(pois):
                 return pois[seleccion - 1]['p.id_poi']  # Retorna el id del huesped seleccionado
             else:

@@ -81,7 +81,7 @@ def alta_habitacion():
                 graph.run(query, id_habitacion=id_habitacion, id_amenity=id_amenity)
                 print(f"Amenity con ID {id_amenity} asignado a la habitación {id_habitacion} exitosamente.")
 
-        print(f"Creación completa de la habitación '{id_habitacion}' en el hotel '{id_hotel['nombre']}'.")
+        print(f"Creación completa de la habitación '{id_habitacion}' en el hotel '{id_hotel}'.")
 
     except Exception as e:
         print(f"Error al crear la habitación: {e}")
@@ -257,8 +257,6 @@ def modificar_habitacion():
     except Exception as e:
         print(f"Error al modificar la habitación: {e}")
 
-
-
 def mostrar_amenities_habitacion():
     try:
         # Paso 1: Mostrar lista de hoteles
@@ -289,7 +287,6 @@ def mostrar_amenities_habitacion():
     except Exception as e:
         print(f"Error al mostrar los amenities de la habitación: {e}")
 
-
 def listar_habitaciones_con_validacion(id_hotel):
     try:
         query = """
@@ -300,7 +297,7 @@ def listar_habitaciones_con_validacion(id_hotel):
         result = graph.run(query,id_hotel=id_hotel )
         habitaciones = result.data()  # Devuelve una lista de diccionarios con los hoteles
         if not habitaciones:
-            print("No hay habitaciones disponibles para modificar.")
+            print("No hay habitaciones disponibles.")
             return None
         intentos= 0
         while intentos<2:

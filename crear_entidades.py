@@ -162,7 +162,7 @@ from dateutil.relativedelta import relativedelta
 def crear_reservas():
     # Lista de huéspedes
     huespedes = [1, 2, 3, 4, 5]  # IDs de los huéspedes generados previamente
-    habitaciones_base = ["Hotel_Palermo", "Hotel_Recoleta", "Hotel_Obelisco", "Hotel_San_Telmo", "Hotel_Puerto_Madero"]  # Base de nombres de habitaciones
+    habitaciones = ["Hotel_Puerto_Madero_1", "Hotel_Puerto_Madero_2", "Hotel_Recoleta_1"]  # IDs de habitaciones creadas
     reservas = []
 
     # Rango de fechas base para las reservas

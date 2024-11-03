@@ -4,9 +4,10 @@ from funciones_hotel import *
 from funciones_poi import *
 from funciones_amenity import *
 from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
 import random
-
+from datetime import datetime, timedelta
+from datetime import datetime, timedelta
+from dateutil import relativedelta
 
 # Borrar reservas de mongo
 def borrar_bd_reservas():
@@ -76,7 +77,7 @@ def crear_hoteles():
             hotel["telefono"], 
             hotel["email"], 
         )
-        print(resultado)   
+         
 
 def crear_amenitys():
     amenitys = [
@@ -94,7 +95,6 @@ def crear_amenitys():
 
     for nombre in amenitys:
         resultado = alta_amenity(nombre)
-        print(resultado)
 
 
 def crear_habitaciones():
@@ -152,12 +152,7 @@ def crear_habitaciones():
 
 
 
-import random
-from datetime import datetime, timedelta
 
-import random
-from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
 
 def crear_reservas():
     # Lista de huéspedes
@@ -172,7 +167,7 @@ def crear_reservas():
         huesped = random.choice(huespedes)
         
         # Selecciona una habitación base y altera el último dígito
-        habitacion_base = random.choice(habitaciones_base)
+        habitacion_base = random.choice(habitaciones)
         ultimo_digito = random.choice([1, 2])  # Genera aleatoriamente 1 o 2
         habitacion = f"{habitacion_base}_{ultimo_digito}"  # Crea el nombre de la habitación
         

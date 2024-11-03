@@ -65,21 +65,30 @@ def alta_hotel(nombre, direccion, telefono, email):
     
 def baja_hotel():
     try:
-        id_hotel= listar_hoteles_con_validacion()
+        id_hotel = listar_hoteles_con_validacion()
         if id_hotel:
-            query = """
+            # Eliminar las habitaciones asociadas al hotel
+            delete_rooms_query = """
+                MATCH (h:Hotel {id_hotel: $id_hotel})-[:CONTIENE]->(hab:Habitacion)
+                DETACH DELETE hab
+            """
+            graph.run(delete_rooms_query, id_hotel=id_hotel)
+
+            # Luego, eliminar el hotel
+            delete_hotel_query = """
                 MATCH (h:Hotel {id_hotel: $id_hotel}) 
                 DETACH DELETE h
             """
-            graph.run(query, id_hotel=id_hotel)
+            graph.run(delete_hotel_query, id_hotel=id_hotel)
+            
             print('Hotel eliminado')
-            return f"Hotel con ID {id_hotel} eliminado exitosamente."
+            return f"Hotel con ID {id_hotel} y sus habitaciones eliminados exitosamente."
     except Exception as e:
         print('Error al eliminar el hotel')
         return f"Error al eliminar el hotel: {e}"
+
  
 def modificar_hotel():
-    
     try:
         id_hotel = listar_hoteles_con_validacion ()
         if id_hotel:        

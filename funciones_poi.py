@@ -59,7 +59,8 @@ def baja_poi():
     try:
         id_poi = listar_pois_y_validar()
         if not id_poi:
-            return none
+            print(f"No extisten pois disponibles")
+            return 
         # Si el POI existe, proceder a eliminarlo
         query = """
             MATCH (poi:POI {id_poi: $id_poi})

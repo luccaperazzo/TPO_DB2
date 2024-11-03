@@ -75,7 +75,7 @@ def crear_hoteles():
             hotel["telefono"], 
             hotel["email"], 
         )
-        print(resultado)   
+         
 
 def crear_amenitys():
     amenitys = [
@@ -93,7 +93,6 @@ def crear_amenitys():
 
     for nombre in amenitys:
         resultado = alta_amenity(nombre)
-        print(resultado)
 
 
 def crear_habitaciones():

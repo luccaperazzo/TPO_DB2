@@ -250,6 +250,7 @@ def reservas_por_fecha_en_hotel(fecha_inicio, fecha_fin):
     except Exception as e:
         print(f"Error al obtener las reservas por fecha en el hotel: {e}")
    
+ 
 def habitaciones_disponibles1(fecha_inicio, fecha_fin):
     # Convertir fechas a objetos datetime
     fecha_inicio = datetime.strptime(fecha_inicio, "%Y-%m-%d")
@@ -283,6 +284,7 @@ def habitaciones_disponibles1(fecha_inicio, fecha_fin):
     # Devolver las habitaciones disponibles como una lista de diccionarios
     return [record["id_habitacion"] for record in result]    
     
+
 def listar_hoteles():
     """Función para listar todos los hoteles disponibles con su ID y nombre."""
     query_hoteles = """

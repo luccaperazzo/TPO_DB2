@@ -5,7 +5,7 @@ from geopy.geocoders import Nominatim
 #cambio lucca
 # Conexion BD Neo4J
 graph = Graph("bolt://neo4j:12345678@localhost:7687")
-geolocator = Nominatim(user_agent="geoapi")
+geolocator = Nominatim(user_agent="geoapii")
 
 def obtener_coordenadas(direccion):
     # Agrega "Capital Federal, Argentina" a la dirección

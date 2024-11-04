@@ -50,7 +50,7 @@ def alta_huesped(nombre, apellido, direccion, telefono, email):
         print(f"Huésped creado exitosamente con ID: {nuevo_id}")
 
     except Exception as e:
-        return print(f"Error al crear el huésped: {e}")
+        print(f"Error al crear el huésped: {e}")
     
 def modificar_huesped():
     try:

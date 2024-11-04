@@ -47,10 +47,10 @@ def alta_huesped(nombre, apellido, direccion, telefono, email):
 
         # Crear el nuevo huésped con el nuevo ID
         graph.create(Node("Huesped", id_huesped=str(nuevo_id), nombre=nombre, apellido=apellido, direccion=direccion, telefono=telefono, email=email))
-        return f"Huésped creado exitosamente con ID: {nuevo_id}"
+        print(f"Huésped creado exitosamente con ID: {nuevo_id}")
 
     except Exception as e:
-        return f"Error al crear el huésped: {e}"
+        print(f"Error al crear el huésped: {e}")
     
 def modificar_huesped():
     try:
@@ -136,8 +136,8 @@ def reservas_por_huesped():
     id_huesped= int(listar_huespedes_con_validacion())
     print(id_huesped)
     if not id_huesped:
-        return
-    # Consultar reservas para el huésped específico
+        return    # Consultar reservas para el huésped específico
+    
     reservas = list(reservas_collection.find({"id_huesped": id_huesped}))
 
     if reservas:

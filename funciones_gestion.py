@@ -227,32 +227,32 @@ def reservas_por_fecha_en_hotel(fecha_inicio, fecha_fin):
         fecha_inicio_obj = datetime.strptime(fecha_inicio, "%Y-%m-%d")
         fecha_fin_obj = datetime.strptime(fecha_fin, "%Y-%m-%d")
 
+        # Consultar habitaciones del hotel seleccionado en Neo4j
+        query_habitaciones = """
+        MATCH (hotel:Hotel {id_hotel: $hotel_id})-[:TIENE]->(habitacion:Habitacion)
+        RETURN habitacion.id_habitacion AS id_habitacion
+        """
+        habitaciones_hotel = [h['id_habitacion'] for h in graph.run(query_habitaciones, hotel_id=hotel_id).data()]
+
         # Consultar reservas en MongoDB en el rango de fechas
         reservas = list(reservas_collection.find({
-            "fecha_entrada": {"$gte": fecha_inicio},
-            "fecha_salida": {"$lte": fecha_fin}
+            "id_habitacion": {"$in": habitaciones_hotel},
+            "$or": [
+                {"fecha_entrada": {"$gte": fecha_inicio, "$lte": fecha_fin}},
+                {"fecha_salida": {"$gte": fecha_inicio, "$lte": fecha_fin}},
+                {
+                    "$and": [
+                        {"fecha_entrada": {"$lte": fecha_inicio}},
+                        {"fecha_salida": {"$gte": fecha_fin}}
+                    ]
+                }
+            ]
         }))
 
-        # Filtrar reservas que pertenecen al hotel específico
-        reservas_filtradas = []
-        for reserva in reservas:
-            id_habitacion = reserva["id_habitacion"]
-
-            # Consultar en Neo4j para obtener el hotel de la habitación
-            query_hotel_habitacion = """
-            MATCH (hotel:Hotel)-[:TIENE]->(habitacion:Habitacion {id_habitacion: $id_habitacion})
-            RETURN hotel.id_hotel AS id_hotel
-            """
-            resultado_hotel = graph.run(query_hotel_habitacion, id_habitacion=id_habitacion).data()
-
-            # Verificar si el hotel coincide con el seleccionado
-            if resultado_hotel and resultado_hotel[0].get("id_hotel") == hotel_id:
-                reservas_filtradas.append(reserva)
-
         # Mostrar las reservas del hotel seleccionado en el rango de fechas
-        if reservas_filtradas:
+        if reservas:
             print(f"\nReservas para el hotel ID {hotel_id} en el rango de fechas especificado:")
-            for reserva in reservas_filtradas:
+            for reserva in reservas:
                 print("-----------------------------------------------------")
                 print(f"Reserva ID: {reserva['_id']}")
                 print(f"Fecha de entrada: {reserva['fecha_entrada']}")
@@ -266,7 +266,7 @@ def reservas_por_fecha_en_hotel(fecha_inicio, fecha_fin):
 
     except Exception as e:
         print(f"Error al obtener las reservas por fecha en el hotel: {e}")
-   
+
  
 
 def listar_hoteles():

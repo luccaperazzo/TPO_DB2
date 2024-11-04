@@ -133,7 +133,8 @@ def ver_detalles_huesped():
 
 
 def reservas_por_huesped():
-    id_huesped= listar_huespedes_con_validacion()
+    id_huesped= int(listar_huespedes_con_validacion())
+    print(id_huesped)
     if not id_huesped:
         return
     # Consultar reservas para el huésped específico

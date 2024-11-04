@@ -6,7 +6,7 @@ from datetime import datetime
 
 # Conexion BD Neo4J y geocoders
 graph = Graph("bolt://neo4j:12345678@localhost:7687")
-geolocator = Nominatim(user_agent="geoapi")   # inicializa un objeto Nominatim de la biblioteca geopy
+geolocator = Nominatim(user_agent="geoapii")   # inicializa un objeto Nominatim de la biblioteca geopy
 client = MongoClient('mongodb://localhost:27017/')
 db = client['hotel_db']
 reservas_collection = db['reservas']

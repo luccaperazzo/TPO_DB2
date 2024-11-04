@@ -45,7 +45,7 @@ def alta_poi(nombre, detalle, direccion, tipo):
        
         subquery="""
         MATCH (p:POI{id_poi: $id_poi}), (h:Hotel)
-        WHERE point.distance(point({latitude: p.latitude, longitude: p.longitude}), point({latitude: h.latitude, longitude: h.longitude})) < 1000
+        WHERE point.distance(point({latitude: p.latitude, longitude: p.longitude}), point({latitude: h.latitude, longitude: h.longitude})) < 1500
         CREATE (h) - [:CERCA_DE {distancia: point.distance(point({latitude: p.latitude, longitude: p.longitude}),
         point({latitude: h.latitude, longitude: h.longitude})) }] -> (p)"""
 
@@ -114,7 +114,7 @@ def modificar_poi():
 
             create_query = """
                 MATCH (h:Hotel), (p:POI{id_poi: $id_poi})
-                WHERE point.distance(point({latitude: h.latitude, longitude: h.longitude}), point({latitude: p.latitude, longitude: p.longitude})) < 1000
+                WHERE point.distance(point({latitude: h.latitude, longitude: h.longitude}), point({latitude: p.latitude, longitude: p.longitude})) < 1500
                 CREATE (h)-[:CERCA_DE {distancia: point.distance(point({latitude: h.latitude, longitude: h.longitude}), point({latitude: p.latitude, longitude: p.longitude}))}]->(p)
             """
             graph.run(create_query, id_poi=id_poi)

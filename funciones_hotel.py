@@ -6,7 +6,7 @@ from datetime import datetime
 
 # Conexion BD Neo4J y geocoders
 graph = Graph("bolt://neo4j:12345678@localhost:7687")
-geolocator = Nominatim(user_agent="geoapi")
+geolocator = Nominatim(user_agent="geoapi")   # inicializa un objeto Nominatim de la biblioteca geopy
 client = MongoClient('mongodb://localhost:27017/')
 db = client['hotel_db']
 reservas_collection = db['reservas']
@@ -15,7 +15,8 @@ def obtener_coordenadas(direccion):
     # Agrega "Capital Federal, Argentina" a la dirección
     direccion_completa = f"{direccion}, Capital Federal, Argentina"
     try:
-        location = geolocator.geocode(direccion_completa)
+        # Obtener las coordenadas (latitud y longitud) de la dirección proporcionada
+        location = geolocator.geocode(direccion_completa, timeout=5) 
         if location:
             return (location.latitude, location.longitude)
         else:
@@ -52,7 +53,7 @@ def alta_hotel(nombre, direccion, telefono, email):
         
         subquery="""
         MATCH (h:Hotel{id_hotel: $id_hotel}), (p:POI)
-        WHERE point.distance(point({latitude: h.latitude, longitude: h.longitude}), point({latitude: p.latitude, longitude: p.longitude})) < 1000
+        WHERE point.distance(point({latitude: h.latitude, longitude: h.longitude}), point({latitude: p.latitude, longitude: p.longitude})) < 1500
         CREATE (h) - [:CERCA_DE {distancia: point.distance(point({latitude: h.latitude, longitude: h.longitude}),
         point({latitude: p.latitude, longitude: p.longitude})) }] -> (p)"""
 
@@ -135,7 +136,7 @@ def modificar_hotel():
                 # Crear nuevas relaciones de proximidad con los POIs cercanos
                 create_query = """
                     MATCH (h:Hotel {id_hotel: $id_hotel}), (p:POI)
-                    WHERE point.distance(point({latitude: h.latitude, longitude: h.longitude}), point({latitude: p.latitude, longitude: p.longitude})) < 1000
+                    WHERE point.distance(point({latitude: h.latitude, longitude: h.longitude}), point({latitude: p.latitude, longitude: p.longitude})) < 1500
                     CREATE (h)-[:CERCA_DE {distancia: point.distance(point({latitude: h.latitude, longitude: h.longitude}), point({latitude: p.latitude, longitude: p.longitude}))}]->(p)
                 """
                 graph.run(create_query, id_hotel=id_hotel)

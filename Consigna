@@ -1,0 +1,63 @@
+Ingeniería de Datos II - Trabajo Practico Obligatorio
+
+(Persistencia Poliglota)
+
+
+Objetivo: Construir una aplicación para gestionar una cadena de hoteles que trabaja mediante la modalidad de reservas únicamente:
+
+
+De cada hotel nos interesa almacenar su nombre, dirección, teléfono/s, dirección de correo electrónico que utiliza habitualmente. Cada hotel está ubicado en diferentes zonas de la ciudad lo que, de acuerdo con la actividad que se quiera realizar, convenga uno u otro (por ejemplo: museos, estadios de fútbol, parques, etc.). Cada hotel tiene registro de estos puntos de interés (POI) y de cada uno se guarda detalle de valor para los huéspedes y/o para aquellos que consultan.
+
+Los hoteles tienen diferentes tipos de habitaciones que ofrecen distintos amenities, por ejemplo: copa de vino de bienvenida, cena, productos especiales de tocador, chocolates, etc.).
+
+Los interesados pueden realizar reservas de las habitaciones de los hoteles. En la reserva se documenta un código de reserva, fecha de inicio y fecha de salida del hotel. Obviamente hay que tener en cuenta que la habitación ya podría estar reservada. La tarifa se acuerda únicamente cuando se confirma la reserva.
+
+De cada huésped nos interesa su teléfono/s, correo electrónico/s, nombre apellido, dirección (calle, número, código postal, provincia, país, lo que se tenga de acuerdo con el país de procedencia).
+
+
+Se pide:
+
+Ø Definir el diagrama ER más adecuados para para el desarrollo de la aplicación.
+
+Ø Definir los modelos de BD más adecuados para el desarrollo de la aplicación, justificando sus elecciones.
+
+Ø Modelar y construir las BD necesarios para el desarrollo de la solución (debe entregar de cada BD utilizada el modelo físico de la estructura).
+
+Ø Crear una aplicación que permita realizar las siguientes acciones:
+
+1. Alta baja o modificación de hoteles, habitaciones, amenities, o puntos de interés.
+
+2. Alta de huéspedes, y reservas.
+
+3. Traer los hoteles cerca de un punto de interés determinado.
+
+4. Encontrar información sobre un determinado hotel. Por ejemplo, el nombre y su ubicación.
+
+5. Encontrar puntos de interés cerca de un hotel determinado.
+
+6. Buscar una habitación disponible en un rango de fechas determinado.
+
+7. Conocer los amenities que tiene una determinada habitación
+
+8. Traer las reservas por número de confirmación.
+
+9. Traer las reservas de un determinado huésped.
+
+10. Traer las reservas por fecha de reserva en el hotel
+
+11. Ver detalles de un huésped.
+
+
+Termino:
+
+Ø La aplicación se desarrollará en grupo, de 3 o 4 integrantes.
+
+Ø Para el desarrollo de esta puede utilizar cualquier lenguaje de programación que desee, siempre que el diseño de esta corresponda a un profesional de sistemas.
+
+Ø La misma se deberá encontrar funcionando para la clase 16 (verificar la fecha correspondiente en el cronograma).
+
+Ø Ese día cada grupo expondrá las bases elegidas, su justificación y mostrará el funcionamiento de la aplicación.
+
+Ø Se interrogará a cualquiera de los integrantes del grupo sobre cualquier aspecto de la aplicación desarrollada.
+
+Ø La ausencia a la fecha de presentación corresponde a un TPO desaprobado. Si no puede asistir avise para coordinar otra fecha
